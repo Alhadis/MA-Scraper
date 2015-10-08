@@ -1,0 +1,335 @@
+<archive>
+	
+	<bands>
+		<band id="3540364029">
+			<name>Dirty Dancing Pigs</name>
+			<genre>Goregrind</genre>
+			<status>active</status>
+			<country>RU</country>
+			<location>Irkutsk</location>
+			<alt>D.D.P.</alt>
+			<themes>Society</themes>
+			<formed>2012</formed>
+			<activity>
+				<period>
+					<from>2012</from>
+					<as><band ref="3540364029" /></as>
+				</period>
+			</activity>
+			<labels></labels>
+			<logo><image ref="l_3540364029" /></logo>
+			<photo><image ref="p_3540364029" /></photo>
+
+			<evidence>http://cs411328.vk.me/v411328063/1a08/SkiSd4WxJRo.jpg
+http://cs323226.vk.me/v323226063/4f1f/zOEMyrvV-MI.jpg</evidence>
+			<created-on>2013-05-02 09:32:48</created-on>
+			<created-by>Malediktum</created-by>
+			<modified-on>2013-05-03 09:25:58</modified-on>
+			<modified-by>Malediktum</modified-by>
+			<rejection>While there's certainly metallic influences on some tracks, I'm afraid the majority of the band's music is weighted firmly in groovy, repeated punk structures (a.l.a., Cock and Ball Torture). Even the metallic material is dangerously borderline. Sorry mate. Pretty good stuff, though!</rejection>
+			<mod-status>rejected</mod-status>
+			<mod-notes></mod-notes>
+			<warning></warning>
+			<digital>0</digital>
+			
+			<links>
+				<link id="477036">
+					<name>VKontakte</name>
+					<url>http://vk.com/dirty_dancing_pigs</url>
+					<category>official</category>
+				</link>
+
+				<link id="477042">
+					<name>YouTube</name>
+					<url>https://www.youtube.com/user/dirtydancingpigs</url>
+					<category>official</category>
+				</link>
+			</links>
+
+			<comparisons>
+				<similar>
+					<to><band ref="146" /></to> <!-- Darkthrone -->
+					<for>
+						...
+					</for>
+					<against>
+						<user>DeathSlay</user>
+					</against>
+				</similar>
+			</comparisons>
+		</band>
+	</bands>
+	
+	
+	<artists>
+		<artist id="500503">
+			<alias>Yuriy Shangin</alias>
+			<name>Юрий Шангин</name>
+			<country>RU</country>
+			<sex>M</sex>
+			<created-on>2013-05-02 08:28:50</created-on>
+			<created-by>Malediktum</created-by>
+			<modified-on>2013-05-03 09:25:46</modified-on>
+			<modified-by>Malediktum</modified-by>
+		</artist>
+		
+		<artist id="500516">
+			<alias>Artem Vedernikov</alias>
+			<name>Артём Ведерников</name>
+			<country>RU</country>
+			<sex>M</sex>
+			<created-on>2013-05-02 09:14:22</created-on>
+			<created-by>Malediktum</created-by>
+			<modified-on>2013-05-02 09:14:22</modified-on>
+			<modified-by>Malediktum</modified-by>
+		</artist>
+		
+		<artist id="500515">
+			<alias>Daniel Nikitenko</alias>
+			<name>Даниил Никитенко</name>
+			<country>RU</country>
+			<sex>M</sex>
+			<created-on>2013-05-02 09:13:21</created-on>
+			<created-by>Malediktum</created-by>
+			<modified-on>2013-05-02 09:13:21</modified-on>
+			<modified-by>Malediktum</modified-by>
+		</artist>
+	</artists>
+
+
+	<releases>
+		<release id="375384">
+			<name>In a Society of Pig</name>
+			<type>Full-length</type>
+			<released>2012</released>
+			<created-on>2013-05-02 09:26:48</created-on>
+			<created-by>Malediktum</created-by>
+			<modified-on>2013-05-02 09:26:48</modified-on>
+			<modified-by>Malediktum</modified-by>
+			<bands>
+				<band ref="3540364029" />
+			</bands>
+			<tracklist>
+				<track ref="2606872" />
+				<track ref="2606873" /> 
+				<track ref="2606874" />
+				<track ref="2606875" />
+				<track ref="2606876" />
+				<track ref="2606877" />
+				<track ref="2606878" />
+				<track ref="2606879" />
+				<track ref="2606880" />
+				<track ref="2606881" />
+			</tracklist>
+		</release>
+
+		<release id="375386">
+			<name>Anal Noize</name>
+			<type>Single</type>
+			<released>2012</released>
+			<created-on>2013-05-02 09:30:41</created-on>
+			<created-by>Malediktum</created-by>
+			<modified-on>2013-05-02 09:30:41</modified-on>
+			<modified-by>Malediktum</modified-by>
+			<bands>
+				<band ref="3540364029" />
+			</bands>
+			<tracklist>
+				<track ref="2606888" />
+				<track ref="2606889" />
+				<track ref="2606890" />
+				<track ref="2606891" />
+			</tracklist>
+		</release>
+	</releases>
+	
+	
+	<tracks>
+		<track id="2606872">
+			<band ref="3540364029" />
+			<name lang="en">Wasabi Chicks (Jig-Ai cover)</name>
+			<duration>1:13</duration>
+			<instrumental>Y</instrumental>
+			<cover>1442882</cover>
+		</track>
+
+		<track id="2606873">
+			<band ref="3540364029" />
+			<name lang="en">Indecet Removing Testis</name>
+			<duration>2:26</duration>
+		</track>
+
+		<track id="2606874">
+			<band ref="3540364029" />
+			<name lang="en">Anal Noise</name>
+			<duration>1:31</duration>
+		</track>
+
+		<track id="2606875">
+			<band ref="3540364029" />
+			<name lang="en">Vomit Out Testines</name>
+			<duration>1:38</duration>
+		</track>
+
+		<track id="2606876">
+			<band ref="3540364029" />
+			<name lang="en">Cold Turkey (Ahumado Granujo cover)</name>
+			<duration>1:24</duration>
+			<cover>327228</cover>
+		</track>
+
+		<track id="2606877">
+			<band ref="3540364029" />
+			<name lang="en">Penis in Your Eyes</name>
+			<duration>2:01</duration>
+		</track>
+
+		<track id="2606878">
+			<band ref="3540364029" />
+			<name lang="en">Fuckin Golden Rain</name>
+			<duration>1:14</duration>
+		</track>
+
+		<track id="2606879">
+			<band ref="3540364029" />
+			<name lang="en">Buldozer's Slam</name>
+			<duration>1:44</duration>
+		</track>
+
+		<track id="2606880">
+			<band ref="3540364029" />
+			<name lang="en">In a Society</name>
+			<duration>2:28</duration>
+		</track>
+
+		<track id="2606881">
+			<band ref="3540364029" />
+			<name lang="en">Dance, Dance Dirty Pig!</name>
+			<duration>1:52</duration>
+		</track>
+
+		<track id="2606888">
+			<band ref="3540364029" />
+			<name lang="en">Anal Noise</name>
+			<duration>1:41</duration>
+		</track>
+
+		<track id="2606889">
+			<band ref="3540364029" />
+			<name lang="en">Anal Noise (live 2012)</name>
+			<duration>1:44</duration>
+		</track>
+
+		<track id="2606890">
+			<band ref="3540364029" />
+			<name lang="en">Vomit Out Intestines (live 2012)</name>
+			<duration>1:27</duration>
+		</track>
+
+		<track id="2606891">
+			<band ref="3540364029" />
+			<name lang="en">Indecent Removing Testis (live 2012)</name>
+			<duration>2:11</duration>
+		</track>
+	</tracks>
+
+
+	<members>
+		<member id="1325252">
+			<subject><artist ref="500515" /></subject>
+			<target><band ref="3540364029" /></target>
+			<type>main</type>
+			<active>Y</active>
+		</member>
+		
+		<member id="1325251">
+			<subject><artist ref="500503" /></subject>
+			<target><band ref="3540364029" /></target>
+			<type>main</type>
+			<active>Y</active>
+		</member>
+		
+		<member id="1325253">
+			<subject><artist ref="500516" /></subject>
+			<target><band ref="3540364029" /></target>
+			<type>main</type>
+			<active>Y</active>
+		</member>
+	</members>
+
+
+	<roles>
+		<role id="1418791">
+			<member>1325252</member>
+			<name>Bass, Vocals</name>
+			<period>
+				<from>2012</from>
+			</period>
+		</role>
+
+		<role id="1418790">
+			<member>1325251</member>
+			<name>Drums</name>
+			<period>
+				<from>2012</from>
+			</period>
+		</role>
+
+		<role id="1418792">
+			<member>1325253</member>
+			<name>Guitars</name>
+			<period>
+				<from>2012</from>
+			</period>
+		</role>
+	</roles>
+
+
+	<history>
+		<edit id="4939672">
+			<on>2013-05-03 09:25:46</on>
+			<by>Malediktum</by>
+			<note>Added the band "Dirty Dancing Pigs" to artist's page : Saved artist &lt;a href="http://www.metal-archives.com/artists/Yuriy_Shangin/500503"&gt;Yuriy Shangin&lt;/a&gt; to line-up with role: Drums</note>
+			<affect>
+				<band ref="3540364029" />
+				<artist ref="500503" />
+			</affect>
+		</edit>
+		
+		<edit id="4939729">
+			<on>2013-05-02 09:22:03</on>
+			<by>Malediktum</by>
+			<note>Modified band data</note>
+			<affect>
+				<band ref="3540364029" />
+			</affect>
+			<details>
+			<!--
+				<add></add>
+				<del></del>
+			-->
+				<mod>
+					<name>Alt spell</name>
+					<new>D.D.P.</new>
+				</mod>
+
+				<mod>
+					<name>Lyrical themes</name>
+					<new>Society</new>
+				</mod>
+			</details>
+		</edit>
+	</history>
+	
+	
+	<images>
+		<image id="l_3540364029">
+			<uri>file:///Users/user1/Library/Application%20Support/Firefox/Profiles/571iant0.default/ScrapBook/data/20130504123528/3540364029_logo.jpg</uri>
+		</image>
+		
+		<image id="p_3540364029">
+			<uri>file:///Users/user1/Library/Application%20Support/Firefox/Profiles/571iant0.default/ScrapBook/data/20130504123528/3540364029_photo.jpg</uri>
+		</image>
+	</images>
+
+</archive>
