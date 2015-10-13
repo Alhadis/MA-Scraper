@@ -1,0 +1,113 @@
+new User(BASIC?)
+	1.	http://www.metal-archives.com/users/${NAME}
+		Basic details:
+		- ID
+		- Username
+		- Rank/status (mod, banned, etc)
+	
+	!BASIC ?
+		- Other details of no interest
+
+
+AuditLog()
+	1.	N/A (Creation/Modification details scraped from a page's source)
+		* Users: new User(BASIC)
+
+
+new Band()
+
+	1.	http://www.metal-archives.com/band/edit/id/${ID}
+			Most core details
+			Label: new Label()
+
+
+	2.	http://www.metal-archives.com/band/view/id/${ID}
+			Report history?
+			AuditLog()
+
+				
+	
+	3.	http://www.metal-archives.com/lineup/edit/bandId/${ID}
+			* Line-up
+				
+				if(! Artist.get(ID)) ){
+					new Artist()
+				}
+				
+				new Member()
+
+
+	4.	http://www.metal-archives.com/band/discography/id/${ID}/tab/all
+			* Discography: new Release()
+
+
+	5.	http://www.metal-archives.com/recommendation/edit/bandId/${ID}
+			* Similar artists:
+
+				GetVoters()
+					1.	http://www.metal-archives.com/recommendation/ajax-user-votes/bandId/${ID}/recBandId/${REC_ID}
+						* new Recommendation()
+
+
+	6.	http://www.metal-archives.com/report/by-object/type/band/id/${ID}/mode/page
+			* Report history:
+
+
+	7.	http://www.metal-archives.com/history/view/type/band/id/${ID}
+			Modification history
+
+	8.	http://www.metal-archives.com/link/ajax-list/type/band/id/${ID}
+			* Related links: new Link()
+			
+
+
+new Release()
+	1.	http://www.metal-archives.com/release/edit/id/${ID}
+			Most core details
+			Label: new Label()
+
+	2.	http://www.metal-archives.com/release/view/id/${ID}
+			AuditLog()
+			Report history?
+			Reviews?
+			* Reissues: new Release()
+
+	3.	http://www.metal-archives.com/lineup/edit/releaseId/${ID}
+			Line-up
+
+	4.	http://www.metal-archives.com/collection/owner-list/releaseId/${ID}
+			* Owners: new User()
+
+	5.	http://www.metal-archives.com/report/by-object/type/4/id/${ID}/mode/page
+			* Reports: new Report()
+
+
+	6.	http://www.metal-archives.com/reviews/_/_/${ID}/
+			* Reviews: new Review()
+
+
+new Label()
+	1.	http://www.metal-archives.com/label/view/id/${ID}
+			Most core details
+
+	2.	http://www.metal-archives.com/label/edit/id/${ID}
+			Report history?
+			AuditLog()
+
+	3.	http://www.metal-archives.com/history/view/type/label/id/${ID}
+			Modification history
+
+	
+new Artist()
+	1.	http://www.metal-archives.com/artist/edit/id/${ID}
+			Most core details
+
+	2.	http://www.metal-archives.com/artist/view/id/${ID}
+			AuditLog()
+			LineUp (shallow)
+			
+	3.	http://www.metal-archives.com/link/ajax-list/type/person/id/${ID}
+			* Links: new Link()
+
+	4.	http://www.metal-archives.com/history/view/type/person/id/${ID}
+			Modification history

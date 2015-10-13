@@ -218,7 +218,22 @@ let example	=	{
 
 
 	users: {
-		167333: {name: "Alhadis", role: "mod"},
+		167333: {
+			name: "Alhadis",
+			role: "mod",
+			lists: {
+				collection: [
+					{id: 337669, version: 337669, notes: "Tape #21"}
+				],
+
+				trade: [
+					{id: 337669},
+					337669 /** Both lines are equivalent */
+				],
+
+				wish: [1241]
+			}
+		},
 		235800: {name: "Valefarita"},
 		109289: {name: "Caliginosity"},
 		138425: {name: "Lustmord56"},
@@ -298,6 +313,25 @@ let example	=	{
 				id: 3540334729,
 				type: "band"
 			}
+		}
+	},
+
+
+	/**
+		We have no normative ID to map band recommendations to, as it's not exposed on the front-end.
+		Hence, we're wielding an awkward syntax of "USER: BAND_A, BAND_B" to uniquely identify each
+		recommendation. Make sure the band IDs are sorted in ascending numeric order!
+	*/
+	recs: {
+		"167333: 1046, 111891": 1,
+		
+		/** If we had normative IDs, it'd look like this: */
+		4:	{
+			bands: [19282, 3540260262],
+			score: 1,
+			by: 96248,
+			on: "2011-04-09 02:47:39",
+			edited: "2011-04-12 02:10:03"
 		}
 	}
 };
