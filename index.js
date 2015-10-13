@@ -33,7 +33,7 @@ ES6ModuleLoader.import("./src/scraper.js")
 
 		try{
 			m.Scraper.init(username, password)
-				.then(m => { new Band(3540334729); })
-				.catch(e);
+				.catch(onError)
+				.then(m => { new Band(3540334729); });
 		} catch(e){ onError(e); }
 	})

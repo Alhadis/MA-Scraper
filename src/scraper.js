@@ -25,42 +25,53 @@ export class Scraper{
 		}
 
 
-		/** Synthesise a submitted form-data string */
-		let data = queryString.stringify({
-			loginUsername:  username,
-			loginPassword:  password,
-			origin:         "/"
-		});
-
-
-		let request	= HTTP.request({
-			hostname: "www.metal-archives.com",
-			path:     "/authentication/login",
-			method:   "POST",
-			headers:  {
-				"Accept":           "text/html,application/xhtml+xml,application/xml;q=0.9",
-				"Accept-Encoding":  "gzip, deflate",
-				"Accept-Language":  "en-AU,en;q=0.8",
-				"Cache-Control":    "no-cache",
-				"Connection":       "keep-alive",
-				"Content-Length":   data.length,
-				"Content-Type":     "application/x-www-form-urlencoded",
-				"Origin":           "http://www.metal-archives.com",
-				"Pragma":           "no-cache",
-				"Referer":          "http://www.metal-archives.com/"
-			}
-		}, result => {
-			let cookies    = result.headers["set-cookie"];
-
-			/** Store the generated login cookie */
-			this.cookieJar = cookies.map(CookieJar.parse);
+		return new Promise((resolve, reject) => {
 			
+			/** Synthesise a submitted form-data string */
+			let data = queryString.stringify({
+				loginUsername:  username,
+				loginPassword:  password,
+				origin:         "/"
+			});
+
+
+			let request	= HTTP.request({
+				hostname: "www.metal-archives.com",
+				path:     "/authentication/login",
+				method:   "POST",
+				headers:  {
+					"Accept":           "text/html,application/xhtml+xml,application/xml;q=0.9",
+					"Accept-Encoding":  "gzip, deflate",
+					"Accept-Language":  "en-AU,en;q=0.8",
+					"Cache-Control":    "no-cache",
+					"Connection":       "keep-alive",
+					"Content-Length":   data.length,
+					"Content-Type":     "application/x-www-form-urlencoded",
+					"Origin":           "http://www.metal-archives.com",
+					"Pragma":           "no-cache",
+					"Referer":          "http://www.metal-archives.com/"
+				}
+			}, result => {
+				let cookies    = result.headers["set-cookie"];
+
+				/** Store the generated login cookie */
+				this.cookieJar = cookies.map(CookieJar.parse);
+				
+				/** Attempt to access a moderator-only page to verify we have required privileges */
+				return fetch("http://www.metal-archives.com/blacklist", {
+					headers: { cookie: this.cookieJar }
+				}).then(result => {
+					(403 == result.status) ?
+						reject(`User ${username} lacks moderator permissions.`) :
+						resolve();
+				});
+			});
+			
+			
+			request.on("error", e => console.error(e));
+			request.write(data);
+			request.end();
 		});
-		
-		
-		request.on("error", e => { console.error(e); });
-		request.write(data);
-		request.end();
 	}
 
 
@@ -72,9 +83,11 @@ export class Scraper{
 	 * @return {Promise}
 	 */
 	static getHTML(url){
+		console.log(`COOKIE JAR: ${this.cookieJar}`);
 
 		return new Promise((resolve, reject) => {
 			JSDom.env({
+				cookieJar: this.cookieJar,
 				url:    url,
 				done:   (error, window) => {
 					if(error) reject(error);
