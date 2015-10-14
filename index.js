@@ -14,26 +14,10 @@ global.JSDom        = require("jsdom");
 global.fetch        = require("node-fetch");
 global.CookieJar    = require("tough-cookie");
 
-const RED           = "\x1B[38;5;196m";
-const BOLD          = "\x1B[1m";
-const RESET         = "\x1B[0m";
 
 
 /** Top-level wrapper to enable ES6 module importing/exporting */
 const ES6ModuleLoader		= require("es6-module-loader").System;
 ES6ModuleLoader.transpiler	= "babel";
-ES6ModuleLoader.import("./src/scraper.js")
+ES6ModuleLoader.import("./src/main.js")
 	.catch(e => { console.error(e); })
-	.then(m  => {
-		let creds     = JSON.parse(fs.readFileSync(".devrc.json"));
-		let username  = creds.username;
-		let password  = creds.password;
-
-		let onError   = e => console.error(`${RED}${BOLD}ERROR${RESET}${RED}: ${e}${RESET}`);
-
-		try{
-			m.Scraper.init(username, password)
-				.catch(onError)
-				.then(m => { new Band(3540334729); });
-		} catch(e){ onError(e); }
-	})

@@ -1,10 +1,6 @@
 "use strict";
 
-import Band      from "./classes/band.js";
-import Artist    from "./classes/artist.js";
-
-
-export class Scraper{
+class Scraper{
 
 	/**
 	 * Authenticates the session with MA's server before pulling data.
@@ -24,9 +20,12 @@ export class Scraper{
 			throw new Error(message);
 		}
 
+		/** Create a shared cookie repo for JSDom; this'll store the generated login cookie */
+		this.cookieJar = new JSDom.createCookieJar();
+
 
 		return new Promise((resolve, reject) => {
-			
+
 			/** Synthesise a submitted form-data string */
 			let data = queryString.stringify({
 				loginUsername:  username,
@@ -34,7 +33,7 @@ export class Scraper{
 				origin:         "/"
 			});
 
-
+			let baseURL	= "http://www.metal-archives.com/";
 			let request	= HTTP.request({
 				hostname: "www.metal-archives.com",
 				path:     "/authentication/login",
@@ -49,25 +48,25 @@ export class Scraper{
 					"Content-Type":     "application/x-www-form-urlencoded",
 					"Origin":           "http://www.metal-archives.com",
 					"Pragma":           "no-cache",
-					"Referer":          "http://www.metal-archives.com/"
+					"Referer":          baseURL
 				}
 			}, result => {
-				let cookies    = result.headers["set-cookie"];
-
-				/** Store the generated login cookie */
-				this.cookieJar = cookies.map(CookieJar.parse);
+				
+				result.headers["set-cookie"]
+					.map(CookieJar.parse)
+					.map(c => { this.cookieJar.setCookieSync(c+"", baseURL) });
 				
 				/** Attempt to access a moderator-only page to verify we have required privileges */
 				return fetch("http://www.metal-archives.com/blacklist", {
-					headers: { cookie: this.cookieJar }
+					headers: { cookie: this.cookieJar.getCookieStringSync(baseURL) }
 				}).then(result => {
 					(403 == result.status) ?
 						reject(`User ${username} lacks moderator permissions.`) :
 						resolve();
 				});
 			});
-			
-			
+
+
 			request.on("error", e => console.error(e));
 			request.write(data);
 			request.end();
@@ -97,3 +96,6 @@ export class Scraper{
 		});
 	}
 }
+
+
+export default Scraper;
