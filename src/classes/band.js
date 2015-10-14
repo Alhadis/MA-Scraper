@@ -27,10 +27,7 @@ class Band extends Resource{
 			this.name		= document.getElementById("bandName");
 			console.log(this.name);
 
-		}).catch(error => {
-			console.log(`ERROR: ${error}`);
-			console.log(error);
-		})
+		}).catch(Scraper.error);
 	}
 }
 
