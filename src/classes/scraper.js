@@ -1,5 +1,7 @@
 "use strict";
 
+import Feedback from "./feedback.js";
+
 const BASE_URL = "http://www.metal-archives.com/";
 
 
@@ -69,7 +71,7 @@ class Scraper{
 			});
 
 
-			request.on("error", this.error);
+			request.on("error", Feedback.error);
 			request.write(data);
 			request.end();
 		});
@@ -131,21 +133,6 @@ class Scraper{
 				}
 			});
 		});
-	}
-	
-	
-	
-	/**
-	 * Sends a formatted/coloured error message to STDERR.
-	 *
-	 * @param {String} message
-	 * @static
-	 */
-	static error(message){
-		const RED     = "\x1B[38;5;196m";
-		const BOLD    = "\x1B[1m";
-		const RESET   = "\x1B[0m";
-		console.error(`${RED}${BOLD}ERROR${RESET}${RED}: ${message}${RESET}`);
 	}
 }
 

@@ -8,14 +8,17 @@ import Scraper   from "./scraper.js";
 class Band extends Resource{
 
 	load(){
+		this.log("Load started");
+
 		this.promises = [
 			this.loadCore(),
 			this.loadPeripherals()
 		];
 
-		return Promise.all(this.promises).catch(Scraper.error);
+		return Promise.all(this.promises).catch(Feedback.error);
 	}
-	
+
+
 	
 	/**
 	 * Loads the majority of the band's details.
@@ -23,9 +26,12 @@ class Band extends Resource{
 	 * @return {Promise}
 	 */
 	loadCore(){
+		this.log("Loading: Main data");
 		let url = `http://www.metal-archives.com/band/edit/id/${this.id}`;
 
 		return Scraper.getHTML(url).then(window => {
+			this.log("Received: Main data");
+
 			let document    = window.document;
 			let $           = s => document.querySelector(s);
 			let optionText  = s => {
@@ -55,8 +61,6 @@ class Band extends Resource{
 			this.rejection  = "";
 			this.digital    = $("#acceptedAsDigital_1").checked;
 			this.locked     = $("#lockedDisco_1").checked;
-			
-			console.log(`BAND: ${this}`);
 		})
 	}
 
@@ -68,17 +72,18 @@ class Band extends Resource{
 	 * @return {Promise}
 	 */
 	loadPeripherals(){
+		this.log("Loading: Peripherals");
 		let url = `http://www.metal-archives.com/band/view/id/${this.id}`;
 
 		return Scraper.getHTML(url).then(window => {
+			this.log("Received: Peripherals");
+
 			let document = window.document;
 			let $        = $ => document.querySelector(s);
 
 			let trail    = this.parseAuditTrail(window);
 			if(trail.added)      this.added     = trail.added;
 			if(trail.modified)   this.modified  = trail.modified;
-			
-			console.log(`BAND: ${this}`);
 		})
 	}
 

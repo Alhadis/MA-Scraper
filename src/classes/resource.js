@@ -1,5 +1,7 @@
 "use strict";
 
+import Feedback from "./feedback.js";
+
 let instances	= new Map();
 
 
@@ -45,20 +47,33 @@ class Resource{
 	constructor(id, autoload = true){
 		let type		= this.constructor;
 		let byId		= type.get(id);
-		let typeName	= type.name.toLowerCase();
 
 		if(byId){
-			console.log(`Reusing ${typeName} # ${id}`);
+			this.log("Already created. Reusing");
 			return byId;
 		}
 
-		console.log(`Created ${typeName} # ${id}`);
 		this.id = id;
 		type.add(id, this);
+		this.log("Created");
 		
 		/** Start loading the resource's data if permitted to */
 		if(autoload) this.load();
 	}
+
+
+	/**
+	 * Sends a string to the Feedback class for terminal display.
+	 *
+	 * @param {String} text
+	 * @access private
+	 */
+	log(text){
+		let type    = this.constructor.name.toLowerCase();
+		let id      = this.id || this.name;
+		Feedback.log(type, id, text);
+	}
+
 
 
 	/**
