@@ -42,7 +42,7 @@ class Resource{
 	 * @param {Number} id - Resource's numeric identifier
 	 * @constructor
 	 */
-	constructor(id){
+	constructor(id, autoload = true){
 		let type		= this.constructor;
 		let byId		= type.get(id);
 		let typeName	= type.name.toLowerCase();
@@ -55,6 +55,30 @@ class Resource{
 		console.log(`Created ${typeName} # ${id}`);
 		this.id = id;
 		type.add(id, this);
+		
+		/** Start loading the resource's data if permitted to */
+		if(autoload) this.load();
+	}
+
+
+	/**
+	 * Base method for pulling the resource's data from Metal Archives.
+	 *
+	 * This function is supposed to be overridden by a subclass; it does
+	 * nothing on its own.
+	 */
+	load(){
+		
+	}
+	
+	
+	/**
+	 * Display the resource's JSON-encoded representation when stringified.
+	 *
+	 * @return {String}
+	 */
+	toString(){
+		return JSON.stringify(this);
 	}
 }
 
