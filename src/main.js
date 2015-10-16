@@ -22,6 +22,5 @@ Scraper.init(username, password)
 			return;
 		}
 
-		Feedback.start();
 		new Band(3540334729);
 	});

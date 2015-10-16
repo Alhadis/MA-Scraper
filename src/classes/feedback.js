@@ -16,18 +16,6 @@ const ICONS = {
 
 
 class Feedback{
-	
-	static start(){
-		
-		/** Store the current terminal dimensions and set a listener to keep them updated */
-		this.updateMetrics();
-		process.stdout.on("resize", this.updateMetrics);
-
-		/** Print the beginning border */
-		console.log("╞" + "═".repeat(this.columns - 2) + "╡");
-	}
-
-
 
 	/**
 	 * Displays a line of feedback describing a resource's loading activity.
@@ -87,18 +75,6 @@ class Feedback{
 		if(output.length > limit)
 			output = output.substr(0, limit) + marker;
 		return output;
-	}
-
-
-	/**
-	 * Updates the row/column counts of the TTY window.
-	 *
-	 * @access private
-	 * @static
-	 */
-	static updateMetrics(){
-		this.columns	= process.stdout.columns;
-		this.rows		= process.stdout.rows;
 	}
 }
 
