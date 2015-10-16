@@ -10,7 +10,7 @@ class Resource{
 	/**
 	 * Returns an instance of this resource's subclassed type by ID.
 	 *
-	 * @param {Number} id - Resource's unique identifier
+	 * @param {String} id - Resource's unique identifier
 	 * @return {Resource}
 	 * @static
 	 */
@@ -23,7 +23,7 @@ class Resource{
 	/**
 	 * Stores a globally-accessible reference to a resource instance
 	 *
-	 * @param {Number}   id       - Resource's unique identifier
+	 * @param {String}   id       - Resource's unique identifier
 	 * @param {Resource} instance - Reference to the resource itself
 	 * @static
 	 */
@@ -41,10 +41,10 @@ class Resource{
 	 * If a resource of the same type and ID's been created, a reference to
 	 * it's returned instead; this allows asynchronous collation of data.
 	 *
-	 * @param {Number} id - Resource's numeric identifier
+	 * @param {String} id - Resource's unique identifier
 	 * @constructor
 	 */
-	constructor(id, autoload = true){
+	constructor(id, autoload = false){
 		let type		= this.constructor;
 		let byId		= type.get(id);
 
@@ -57,7 +57,7 @@ class Resource{
 		type.add(id, this);
 		this.log("Created");
 		
-		/** Start loading the resource's data if permitted to */
+		/** Start loading the resource's data if told to */
 		if(autoload) this.load();
 	}
 

@@ -22,5 +22,7 @@ Scraper.init(username, password)
 			return;
 		}
 
-		new Band(3540334729);
+		new Band(3540334729).load()
+			.then(() => console.log('Done!'))
+			.catch(e => Feedback.error(e));
 	});

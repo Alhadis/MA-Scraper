@@ -3,19 +3,17 @@
 import Resource  from "./resource.js";
 import Label     from "./label.js";
 import Scraper   from "./scraper.js";
+import User      from "./user.js";
 
 
 class Band extends Resource{
 
 	load(){
 		this.log("Load started");
-
-		this.promises = [
+		return Promise.all([
 			this.loadCore(),
 			this.loadPeripherals()
-		];
-
-		return Promise.all(this.promises).catch(Feedback.error);
+		]);
 	}
 
 
@@ -77,13 +75,36 @@ class Band extends Resource{
 
 		return Scraper.getHTML(url).then(window => {
 			this.log("Received: Peripherals");
-
+			let promises = [];
 			let document = window.document;
-			let $        = $ => document.querySelector(s);
+			let $        = s => document.querySelector(s);
 
+			/** Load dates that the resource was last modified/created */
 			let trail    = this.parseAuditTrail(window);
-			if(trail.added)      this.added     = trail.added;
-			if(trail.modified)   this.modified  = trail.modified;
+
+			if(trail.added){
+				this.added = trail.added;
+				let by     = this.added.by;
+				if(by){
+					by = new User(by);
+					promises.push(by.load());
+					this.added.by = by;
+				}
+			}
+
+			if(trail.modified){
+				this.modified = trail.modified;
+				let by        = this.modified.by;
+				if(by){
+					by = new User(by);
+					promises.push(by.load());
+					this.modified.by = by;
+				}
+			}
+			
+			
+			if(promises.length)
+				return Promise.all(promises);
 		})
 	}
 
