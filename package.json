@@ -1,0 +1,19 @@
+{
+	"name": "MA-Scraper",
+	"description": "Tool for extracting band-related data from Encyclopaedia Metallum.",
+	"version": "1.0.0",
+	"private": true,
+	"license": "UNLICENSED",
+	"repository": "Alhadis/MA-Scraper",
+	"engines": { "node": ">=4.2.0" },
+	"preferGlobal": true,
+	"dependencies": {
+		"jsdom": "*",
+		"node-fetch": "*",
+		"tough-cookie": "*"
+	},
+	"devDependencies": {
+		"es6-module-loader": "*",
+		"babel": "*"
+	}
+}
