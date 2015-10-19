@@ -1,23 +1,21 @@
 "use strict";
 
-import Resource  from "./resource.js";
-import Label     from "./label.js";
-import Scraper   from "./scraper.js";
-import User      from "./user.js";
+import Scraper     from "./scraper.js";
+import Submission  from "./submission.js";
+import Label       from "./label.js";
 
 
-class Band extends Resource{
+class Band extends Submission{
 
 	load(){
-		this.log("Load started");
-		return Promise.all([
-			this.loadCore(),
-			this.loadPeripherals()
+		return super.load([
+			this.loadCore,
+			this.loadPeripherals
 		]);
 	}
 
 
-	
+
 	/**
 	 * Loads the majority of the band's details.
 	 *
@@ -48,7 +46,6 @@ class Band extends Resource{
 			this.formed     = $("#yearCreation").value;
 			this.activity   = this.getActivityPeriods(window);
 			this.unsigned   = $("#indieLabel_1").checked;
-			this.labels     = this.getLabels(window);
 			this.logo       = ($(".band_name_img > a#logo") || {}).href;
 			this.photo      = ($(".band_img > #photo")      || {}).href;
 			this.notes      = $("textarea[name=notes]").value;
@@ -59,6 +56,14 @@ class Band extends Resource{
 			this.rejection  = "";
 			this.digital    = $("#acceptedAsDigital_1").checked;
 			this.locked     = $("#lockedDisco_1").checked;
+			
+			
+			/** Load any labels the band are signed to */
+			let labels      = this.getLabels(window);
+			if(labels.length){
+				this.labels = labels;
+				Promise.all(labels.map(l => l.load()));
+			}
 		})
 	}
 
@@ -75,82 +80,14 @@ class Band extends Resource{
 
 		return Scraper.getHTML(url).then(window => {
 			this.log("Received: Peripherals");
-			let promises = [];
-			let document = window.document;
-			let $        = s => document.querySelector(s);
 
 			/** Load dates that the resource was last modified/created */
-			let trail    = this.parseAuditTrail(window);
+			let promises = this.parseAuditTrail(window);
 
-			if(trail.added){
-				this.added = trail.added;
-				let by     = this.added.by;
-				if(by){
-					by = new User(by);
-					promises.push(by.load());
-					this.added.by = by;
-				}
-			}
-
-			if(trail.modified){
-				this.modified = trail.modified;
-				let by        = this.modified.by;
-				if(by){
-					by = new User(by);
-					promises.push(by.load());
-					this.modified.by = by;
-				}
-			}
-			
-			
+			/** Load the data of any users mentioned in the page's footer */
 			if(promises.length)
 				return Promise.all(promises);
 		})
-	}
-
-
-
-	/**
-	 * Pull creation/modification times from the page's footer.
-	 *
-	 * @param {Window} window
-	 * @return {Object}
-	 */
-	parseAuditTrail(window){
-		let trail       = window.document.getElementById("auditTrail");
-		let rows        = trail.querySelectorAll("tr");
-
-		let userLink    = "a.profileMenu";
-		let rTimeStamp  = /(^((?:Last\s*)?Modified|Added)\s+on:\s*|N\/A\s*$)/gi;
-		let by, on, info;
-		let output = {};
-		
-		/** "Added by" / "Added on" */
-		by = (rows[0].children[0].querySelector(userLink) || {}).textContent;
-		on = rows[1].children[0].textContent.replace(rTimeStamp, "");
-		if(by || on){
-			info = {};
-			if(by) info.by = by;
-			if(on) info.on = on;
-			output.added   = info;
-		}
-
-
-		/** "Modified by" / "Last modified on" */
-		by = (rows[0].children[1].querySelector(userLink) || {}).textContent;
-		on = rows[1].children[1].textContent.replace(rTimeStamp, "");
-		if(by || on){
-			info = {};
-			if(by) info.by  = by;
-			if(on) info.on  = on;
-			output.modified = info;
-		}
-		
-
-		/** Check if there're any reports */
-		output.haveReports = !!trail.querySelector(`a[href*="/report/by-object/"]`);
-
-		return output;
 	}
 
 
@@ -200,10 +137,9 @@ class Band extends Resource{
 		let output  = [];
 		let labelId = parseInt(window.document.getElementById("labelId").value);
 
-		if(labelId){
-			output.push(labelId);
-			new Label(labelId);
-		}
+		if(labelId)
+			output.push(new Label(labelId));
+
 		return output;
 	}
 }

@@ -21,8 +21,9 @@ Scraper.init(username, password)
 			process.exit(1);
 			return;
 		}
-
-		new Band(3540334729).load()
+		
+		let Alturiak = 3540334729;
+		new Band(3540297142).load()
 			.then(() => console.log('Done!'))
 			.catch(e => Feedback.error(e));
 	});

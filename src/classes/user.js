@@ -1,7 +1,8 @@
 "use strict";
 
-import Resource from "./resource.js";
 import Scraper  from "./scraper.js";
+import Resource from "./resource.js";
+import Feedback from "./feedback.js";
 
 
 /** Role-type constants */
@@ -32,13 +33,12 @@ class User extends Resource{
 
 
 	load(){
-		this.log("Load started");
-		return Promise.all([
-			this.loadCore()
+		return super.load([
+			this.loadCore
 		]);
 	}
-	
-	
+
+
 	
 	loadCore(){
 		this.log("Loading: Main data");
@@ -82,7 +82,7 @@ class User extends Resource{
 
 					switch(name){
 						case "Email address":{
-							value = dd.firstElementChild.rel.replace("//", "@").replace("/", ".").split("").reverse().join("");
+							value = dd.firstElementChild.rel.replace("//", "@").replace(/\//g, ".").split("").reverse().join("");
 							break;
 						}
 						
@@ -133,6 +133,12 @@ class User extends Resource{
 			this.modNotes    = $('textarea[name="mod_notes"]').value;
 			this.role        = roles[this.rank];
 		});
+	}
+
+
+
+	log(text){
+		Feedback.log("user", this.name || this.id, text);
 	}
 }
 

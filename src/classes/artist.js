@@ -1,9 +1,11 @@
 "use strict";
 
-import Resource  from "./resource.js";
-import Scraper   from "./scraper.js";
+import Scraper     from "./scraper.js";
+import Submission  from "./submission.js";
 
 
-export class Artist extends Resource{
+class Artist extends Submission{
 	
 }
+
+export default Artist;

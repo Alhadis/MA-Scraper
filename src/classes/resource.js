@@ -35,13 +35,15 @@ class Resource{
 	}
 
 
+
 	/**
 	 * Creates or returns a reference to a Resource object.
 	 *
 	 * If a resource of the same type and ID's been created, a reference to
 	 * it's returned instead; this allows asynchronous collation of data.
 	 *
-	 * @param {String} id - Resource's unique identifier
+	 * @param {String} id        - Resource's unique identifier
+	 * @param {Boolean} autoload - Begin loading the resource's data after creation
 	 * @constructor
 	 */
 	constructor(id, autoload = false){
@@ -49,7 +51,7 @@ class Resource{
 		let byId		= type.get(id);
 
 		if(byId){
-			this.log("Already created. Reusing");
+			byId.log("Already created. Reusing");
 			return byId;
 		}
 
@@ -60,6 +62,28 @@ class Resource{
 		/** Start loading the resource's data if told to */
 		if(autoload) this.load();
 	}
+
+
+
+	/**
+	 * Base method for pulling the resource's data from Metal Archives.
+	 *
+	 * @param {Array} callbacks - Array of functions to resolve into Promises
+	 * @return {Promise}
+	 */
+	load(callbacks = []){
+		let p = Promise.resolve();
+
+		if(!this.loaded){
+			this.log("Load started");
+			this.loaded = true;
+			callbacks.forEach(o => p = p.then(o.bind(this)));
+		}
+
+		else this.log("Already loaded");
+		return p;
+	}
+
 
 
 	/**
@@ -75,18 +99,6 @@ class Resource{
 	}
 
 
-
-	/**
-	 * Base method for pulling the resource's data from Metal Archives.
-	 *
-	 * This function is supposed to be overridden by a subclass; it does
-	 * nothing on its own.
-	 */
-	load(){
-		
-	}
-	
-	
 	/**
 	 * Display the resource's JSON-encoded representation when stringified.
 	 *
