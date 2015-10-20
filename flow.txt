@@ -28,6 +28,8 @@ new Band()
 				
 	
 	3.	http://www.metal-archives.com/lineup/edit/bandId/${ID}
+		http://www.metal-archives.com/lineup/edit-artists/bandId/${ID}/typeId/1/releaseId/0 [MAIN]
+		http://www.metal-archives.com/lineup/edit-artists/bandId/${ID}/typeId/3/releaseId/0 [LIVE]
 			* Line-up
 				
 				if(! Artist.get(ID)) ){

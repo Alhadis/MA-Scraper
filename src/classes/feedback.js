@@ -26,23 +26,26 @@ class Feedback{
 	static log(obj, text){
 		let type  = obj.constructor.name;
 		let id    = obj.id || obj.name;
-		let icon  = ICONS[type] || "  ";
+		let icon  = ICONS[type];
+
+		/** Suppress output for minor resource types */
+		if(!icon) return;
 
 		type      = this.pad(type, 7);
 		id        = this.pad(this.truncate(id, 16), 16);
 
-		console.info(`${icon}  ${type}  ${id}  ${text}`);
+		console.info(`${icon || " "}  ${type}  ${id}  ${text}`);
 	}
 	
 
 	/**
 	 * Sends a formatted/coloured error message to STDERR.
 	 *
-	 * @param {String} message
+	 * @param {String|Error} message
 	 * @static
 	 */
 	static error(message){
-		console.error(`${RED}${BOLD}ERROR${RESET}${RED}: ${message}${RESET}`);
+		console.error(`${RED}${BOLD}ERROR${RESET}${RED}: ${message.stack || message}${RESET}`);
 	}
 	
 

@@ -3,6 +3,7 @@
 import Scraper     from "./scraper.js";
 import Submission  from "./submission.js";
 import Label       from "./label.js";
+import Member      from "./member.js";
 
 
 class Band extends Submission{
@@ -10,7 +11,8 @@ class Band extends Submission{
 	load(){
 		return super.load([
 			this.loadCore,
-			this.loadPeripherals
+			this.loadPeripherals,
+			this.loadMembers
 		]);
 	}
 
@@ -87,7 +89,35 @@ class Band extends Submission{
 			/** Load the data of any users mentioned in the page's footer */
 			if(promises.length)
 				return Promise.all(promises);
-		})
+		});
+	}
+
+
+
+	/**
+	 * Load the artists who're listed in a band's line-up.
+	 *
+	 * @return {Promise}
+	 */
+	loadMembers(){
+		this.log("Loading: Members/Line-up");
+		let url = `http://www.metal-archives.com/lineup/edit-artists/bandId/${this.id}/typeId/1/releaseId/0`;
+		
+		return Scraper.getHTML(url).then(window => {
+			this.log("Received: Members/Line-up");
+
+			let promises  = Promise.resolve();
+			let document  = window.document;
+			let roles     = document.querySelectorAll("tr[id^='artist_']");
+
+			for(let row of roles){
+				let id       = row.id.match(/_(\d+)$/)[1];
+				let roles    = document.querySelector("#roleList_" + id);
+				promises.then( new Member(id).load([row, roles]) );
+			}
+			
+			return promises;
+		});
 	}
 
 

@@ -35,6 +35,13 @@ class Resource{
 	}
 
 
+	/** List every Resource instance that's been created. Intended for debugging. */
+	static list(){
+		let entries = instances.entries();
+		for(let e of entries)
+			console.log(util.inspect(e));
+	}
+
 
 	/**
 	 * Creates or returns a reference to a Resource object.
