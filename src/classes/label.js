@@ -45,7 +45,7 @@ class Label extends Submission{
 			this.description     = $('textarea[name="description"]').value;
 			this.url             = $("#website").value;
 			this.onlineShopping  = $("#onlineShopping_1").checked;
-			this.founded         = this.parseDate(window, "#foundingDateYear", "#foundingDateMonth", "#foundingDateDay");
+			this.founded         = this.parseDate(window, "#foundingDateDay", "#foundingDateMonth", "#foundingDateYear");
 			this.logo            = ($("#label_logo") || {}).href;
 			this.address         = $('textarea[name="address"]').value;
 			this.phone           = $("#phone").value;

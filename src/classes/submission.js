@@ -75,17 +75,17 @@ class Submission extends Resource{
 	 * DOM/CSS selectors may be passed in instead of element references
 	 *
 	 * @param {Window} window
-	 * @param {String|HTMLElement} year
-	 * @param {String|HTMLElement} month
 	 * @param {String|HTMLElement} day
+	 * @param {String|HTMLElement} month
+	 * @param {String|HTMLElement} year
 	 * @return {String}
 	 */
-	parseDate(window, year, month, day){
-		let $ = window.document.querySelector;
+	parseDate(window, day, month, year){
+		let $  = s => window.document.querySelector(s);
 		
-		let y  = "string" === typeof year  ? $(year)  : year;
-		let m  = "string" === typeof month ? $(month) : month;
 		let d  = "string" === typeof day   ? $(day)   : day;
+		let m  = "string" === typeof month ? $(month) : month;
+		let y  = "string" === typeof year  ? $(year)  : year;
 
 		/** Add leading zeros when necessary */
 		let padZeroes = (n,z) => {
