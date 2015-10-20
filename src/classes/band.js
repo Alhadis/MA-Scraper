@@ -113,7 +113,7 @@ class Band extends Submission{
 			for(let row of roles){
 				let id       = row.id.match(/_(\d+)$/)[1];
 				let roles    = document.querySelector("#roleList_" + id);
-				promises.then( new Member(id).load([row, roles]) );
+				promises.then( new Member(id, this).load([row, roles]) );
 			}
 			
 			return promises;

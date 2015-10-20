@@ -1,5 +1,6 @@
 "use strict";
 
+import Scraper  from "./scraper.js";
 import Artist   from "./artist.js";
 import Resource from "./resource.js";
 import Role     from "./role.js";
@@ -14,14 +15,54 @@ import Role     from "./role.js";
 class Member extends Resource{
 	
 	/**
+	 * Create a new member instance.
+	 *
+	 * @param {Number}   id      - Numeric ID
+	 * @param {Resource} parent  - Subject object that the member's attached to
+	 * @constructor
+	 */
+	constructor(id, parent){
+		super(id);
+		this.for = parent;
+	}
+	
+	
+	
+	/**
 	 * Extract relevant data from a sequence of HTML nodes.
+	 *
+	 * If passed no arguments, the data is extracted from a standalone form instead.
 	 *
 	 * @param {Array} chunks - Array of HTML elements
 	 * @return {Promise}
 	 */
 	load(chunks){
 		this.roles = this.roles || [];
-		return this.getMemberInfo(...chunks);
+		
+		/** We were already given the data to work off, no need to fetch anything. */
+		if(chunks)
+			return this.getMemberInfo(...chunks);
+		
+		
+		/** Otherwise, do things the trickier way */
+		this.log("No lineup form passed; loading remotely");
+		let url = `http://www.metal-archives.com/lineup/edit-roles/id/${this.id}`;
+
+		return Scraper.getHTML(url).then(window => {
+			this.log("Data received");
+
+			let document       = window.document;
+			let $              = s => document.querySelector(s);
+			let unlistedBand   = ($("input[name^='unlistedBand']") || {}).value;
+			if(unlistedBand)
+				this.for = unlistedBand;
+				
+			return this.getMemberInfo(
+				$("tr[id^='artist_']"),
+				$("tr[id^='roleList_']")
+			);
+		});
+		
 	}
 	
 	
