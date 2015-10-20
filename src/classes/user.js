@@ -134,12 +134,6 @@ class User extends Resource{
 			this.role        = roles[this.rank];
 		});
 	}
-
-
-
-	log(text){
-		Feedback.log("user", this.name || this.id, text);
-	}
 }
 
 export default User;

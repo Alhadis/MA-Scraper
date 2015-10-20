@@ -1,17 +1,17 @@
 "use strict";
 
-const TYPE_ARTIST   = "artist";
-const TYPE_BAND     = "band";
-const TYPE_LABEL    = "label";
-const TYPE_RELEASE  = "release";
-const TYPE_USER     = "user";
+const RED     = "\x1B[38;5;196m";
+const GREY    = "\x1B[38;5;8m";
+const BOLD    = "\x1B[1m";
+const RESET   = "\x1B[0m";
+
 
 const ICONS = {
-	[TYPE_ARTIST]:   String.fromCodePoint(0x1F3AD),
-	[TYPE_BAND]:     String.fromCodePoint(0x1F3B8),
-	[TYPE_LABEL]:    String.fromCodePoint(0x1F516),
-	[TYPE_RELEASE]:  String.fromCodePoint(0x1F4C0),
-	[TYPE_USER]:     String.fromCodePoint(0x1F464)
+	Artist:   String.fromCodePoint(0x1F3AD),
+	Band:     String.fromCodePoint(0x1F3B8),
+	Label:    String.fromCodePoint(0x1F516),
+	Release:  String.fromCodePoint(0x1F4C0),
+	User:     String.fromCodePoint(0x1F464)
 };
 
 
@@ -20,16 +20,17 @@ class Feedback{
 	/**
 	 * Displays a line of feedback describing a resource's loading activity.
 	 *
-	 * @param {String} type - One of the TYPE_* string constants
-	 * @param {Mixed}  id   - Numeric or string-based identifier for subject resource
-	 * @param {String} text - Details describing what's going on
+	 * @param {Resource} obj  - Resource in question
+	 * @param {String}   text - Short description of what's just happened
 	 */
-	static log(type, id, text){
-		let ucType  = type[0].toUpperCase() + type.substr(1).toLowerCase();
-		let icon    = ICONS[type] || "  ";
+	static log(obj, text){
+		let type  = obj.constructor.name;
+		let id    = obj.id || obj.name;
+		let icon  = ICONS[type] || "  ";
 
-		type = this.pad(ucType, 7);
-		id   = this.pad(this.truncate(id, 14), 14);
+		type      = this.pad(type, 7);
+		id        = this.pad(this.truncate(id, 16), 16);
+
 		console.info(`${icon}  ${type}  ${id}  ${text}`);
 	}
 	
@@ -41,9 +42,6 @@ class Feedback{
 	 * @static
 	 */
 	static error(message){
-		const RED     = "\x1B[38;5;196m";
-		const BOLD    = "\x1B[1m";
-		const RESET   = "\x1B[0m";
 		console.error(`${RED}${BOLD}ERROR${RESET}${RED}: ${message}${RESET}`);
 	}
 	

@@ -93,9 +93,7 @@ class Resource{
 	 * @access private
 	 */
 	log(text){
-		let type    = this.constructor.name.toLowerCase();
-		let id      = this.id || this.name;
-		Feedback.log(type, id, text);
+		Feedback.log(this, text);
 	}
 
 
