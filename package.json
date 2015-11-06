@@ -15,5 +15,15 @@
 	"devDependencies": {
 		"babel-core": ">=6.1.2",
 		"babel-preset-es2015": ">=6.1.2"
+	},
+	
+	"babel":{
+		"plugins": [
+			"transform-es2015-destructuring",
+			"transform-es2015-modules-commonjs",
+			"transform-es2015-parameters",
+			"transform-es2015-sticky-regex",
+			"transform-es2015-unicode-regex"
+		]
 	}
 }
