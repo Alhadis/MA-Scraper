@@ -4,6 +4,7 @@ import Band      from "./classes/band.js";
 import Artist    from "./classes/artist.js";
 import Scraper   from "./classes/scraper.js";
 import Feedback  from "./classes/feedback.js";
+import Release   from "./classes/release.js";
 import Resource  from "./classes/resource.js";
 import Member    from "./classes/member.js";
 
@@ -25,11 +26,7 @@ Scraper.init(username, password)
 		}
 		
 		try{
-			/*
-			let Alturiak = 3540334729;
-			new Band(3540297142).load()*/
-			
-			new Artist(136).load()
+			new Release(514764).load()
 				.catch(e => Feedback.error(e))
 				.then(() => {
 					console.log('Done!');

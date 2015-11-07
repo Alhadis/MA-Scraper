@@ -56,12 +56,15 @@ class Label extends Submission{
 
 
 			/** Parent label */
-			this.parent = $('input[name="parentLabelId"]').value;
+			this.parent = parseInt($('input[name="parentLabelId"]').value);
 			if(this.parent){
 				this.log("Creating parent label");
 				this.parent = new Label(this.parent);
 				promises.push(this.parent.load());
 			}
+			
+			this.log("Done: Main data");
+			return Promise.all(promises);
 		});
 	}
 
@@ -73,13 +76,13 @@ class Label extends Submission{
 		
 		return Scraper.getHTML(url).then(window => {
 			this.log("Received: Peripherals");
+			let promises = [];
 			
 			/** Load dates that the resource was last modified/created */
-			let promises = this.parseAuditTrail(window);
+			promises.push(...(this.parseAuditTrail(window)));
 			
-			/** Load the data of any users mentioned in the page's footer */
-			if(promises.length)
-				return Promise.all(promises);
+			this.log("Done: Peripherals");
+			return Promise.all(promises);
 		})
 	}
 }

@@ -3,6 +3,7 @@
 import Scraper     from "./scraper.js";
 import Submission  from "./submission.js";
 import Band        from "./band.js";
+import Label       from "./label.js";
 
 
 class Release extends Submission{
@@ -27,9 +28,59 @@ class Release extends Submission{
 		
 		return Scraper.getHTML(url).then(window => {
 			this.log("Received: Main data");
+			let promises    = [];
 			
-			let document = window.document;
-			let $        = s => document.querySelector(s);
+			let document    = window.document;
+			let $           = s => document.querySelector(s);
+			let optionText  = s => {
+				let el = $(s);
+				return el.options[el.selectedIndex].textContent;
+			};
+
+			/** Begin ripping out vitals */
+			this.name          = $("#releaseName").value;
+			this.type          = optionText("#typeId");
+			this.date          = this.parseDate(window, "#releaseDateDay", "#releaseDateMonth", "#releaseDateYear");
+			this.catId         = $("#catalogNumber").value;
+			this.limitation    = $("#nbCopies").value;
+			this.cover         = ($(".album_img > #cover") || {}).href;
+			this.description   = $("#versionDescription").value;
+			this.separate      = $("#separateListing_1").checked;
+			this.locked        = $("#lockUpdates_1").checked;
+			this.notes         = $("textarea[name=notes]").value;
+			this.recordingInfo = $("textarea[name=recordingInfo]").value;
+			this.identifiers   = $("textarea[name=identifiers]").value;
+			this.warning       = $("textarea[name=notesWarning]").value;
+			
+			/** Release's label */
+			let label          = parseInt($("#labelId").value);
+			let selfReleased   = $("#indieLabel_1").checked;
+			if(label && !selfReleased){
+				this.labels = [new Label(label)];
+				promises.push(this.labels[0].load());
+			}
+			
+			this.log("Done: Main data");
+			return Promise.all(promises);
+		});
+	}
+	
+	
+	
+	/**
+	 * Load auxiliary band data not accessible from the edit page (e.g., timestamps)
+	 *
+	 * @return {Promise}
+	 */
+	loadPeripherals(){
+		this.log("Loading: Peripherals");
+		let url = `http://www.metal-archives.com/release/view/id/${this.id}`;
+		
+		return Scraper.getHTML(url).then(window => {
+			this.log("Received: Peripherals");
+			let promises    = [];
+			
+			return Promise.all(promises);
 		});
 	}
 	
