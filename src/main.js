@@ -28,8 +28,8 @@ Scraper.init(username, password)
 			/*
 			let Alturiak = 3540334729;
 			new Band(3540297142).load()*/
-
-			new Member(1142570).load()
+			
+			new Artist(136).load()
 				.catch(e => Feedback.error(e))
 				.then(() => {
 					console.log('Done!');

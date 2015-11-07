@@ -15,12 +15,15 @@ class Role extends Resource{
 		let id = el.id.match(/_(\d+)$/)[1];
 		super(id);
 
-		this.id     = id;
-		this.name   = el.querySelector(".roleDesc").value;
-		this.from   = el.querySelector("input[name^=dateFrom]").value;
-		this.to     = el.querySelector("input[name^=dateTo]").value;
+		this.id      = id;
+		this.name    = el.querySelector(".roleDesc").value;
+		let dateFrom = el.querySelector("input[name^=dateFrom]");
+		let dateTo   = el.querySelector("input[name^=dateTo]");
+		if(dateFrom){
+			this.from   = dateFrom.value;
+			this.to     = dateTo.value;
+		}
 	}
-	
 }
 
 

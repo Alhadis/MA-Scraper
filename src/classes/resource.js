@@ -39,7 +39,7 @@ class Resource{
 	static list(){
 		let entries = instances.entries();
 		for(let e of entries)
-			console.log(util.inspect(e));
+			console.log(util.inspect(e, {depth: 5}));
 	}
 
 
@@ -79,12 +79,12 @@ class Resource{
 	 * @return {Promise}
 	 */
 	load(callbacks = []){
-		let p = Promise.resolve();
+		let p = [];
 
 		if(!this.loaded){
 			this.log("Load started");
 			this.loaded = true;
-			callbacks.forEach(o => p = p.then(o.bind(this)));
+			p = Promise.all(callbacks.map(o => this::o()));
 		}
 
 		else this.log("Already loaded");

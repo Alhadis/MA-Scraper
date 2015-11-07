@@ -2,6 +2,8 @@
 
 import Scraper  from "./scraper.js";
 import Artist   from "./artist.js";
+import Band     from "./band.js";
+import Release  from "./release.js";
 import Resource from "./resource.js";
 import Role     from "./role.js";
 
@@ -9,7 +11,7 @@ import Role     from "./role.js";
 /**
  * Describes an artist's involvement in a band or release's recording.
  *
- * Unlike other resources, Members aren't loaded from a remote source:
+ * Unlike other resources, Members aren't usually loaded from a remote source:
  * they're extracted from chunks of HTML in the "Edit Line-up" page.
  */
 class Member extends Resource{
@@ -54,9 +56,41 @@ class Member extends Resource{
 			let document       = window.document;
 			let $              = s => document.querySelector(s);
 			let unlistedBand   = ($("input[name^='unlistedBand']") || {}).value;
+			
+			/** Store the name of an unlisted band */
 			if(unlistedBand)
 				this.for = unlistedBand;
+			
+			
+			/** This member's not been associated with a Resource instance yet */
+			else if(!this.for){
+				let bandName  = $(".band_name");
+				let albumName = $(".album_name");
+
+				/** Album line-up */
+				if(albumName){
+					let albumID = albumName.innerHTML.match(/href="[^"]+\/(\d+)"/i)[1];
+					let album   = Release.get(albumID);
+					if(!album){
+						album       = new Release(albumID);
+						album.name  = albumName.textContent.trim();
+						album.for   = Release.bandsInTitle(bandName);
+					}
+					this.for = album;
+				}
 				
+				/** Band line-up */
+				else{
+					let bandID = bandName.innerHTML.match(/href="[^"]+\/(\d+)"/i)[1];
+					let band   = Band.get(bandID);
+					if(!band){
+						band      = new Band(bandID);
+						band.name = bandName.textContent.trim();
+					}
+					this.for = band;
+				}
+			}
+			
 			return this.getMemberInfo(
 				$("tr[id^='artist_']"),
 				$("tr[id^='roleList_']")
@@ -81,7 +115,9 @@ class Member extends Resource{
 		this.artist  = new Artist(artist.innerHTML.match(/<a href="http:\/{2}www\.metal-archives\.com\/artist\/edit\/id\/(\d+)"/i)[1]);
 		this.alias   = $("input[name^='alias']").value;
 		this.type    = $("select[name^='type']").value;
-		this.active  = $("input[type='checkbox'][id^='status_']").checked;
+		let active   = $("input[type='checkbox'][id^='status_']");
+		if(active)
+			this.active  = active.checked;
 		
 		
 		/** Now start collecting the roles */

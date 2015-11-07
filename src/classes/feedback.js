@@ -28,9 +28,6 @@ class Feedback{
 		let id    = obj.id || obj.name;
 		let icon  = ICONS[type];
 
-		/** Suppress output for minor resource types */
-		if(!icon) return;
-
 		type      = this.pad(type, 7);
 		id        = this.pad(this.truncate(id, 16), 16);
 

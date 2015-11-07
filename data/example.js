@@ -111,6 +111,18 @@ let example	=	{
 			identifiers: "",
 			warning: "",
 			
+			for: {
+				id: "3540334729",
+				type: "band"
+			},
+			
+			/** For splits/collaborations: */
+			for: [
+				{id: "108715", type: "band"},
+				"Aderlating" /* Unlisted band */
+			],
+
+
 			added: {
 				by: 235800,
 				on: "2011-09-24 12:54:38"

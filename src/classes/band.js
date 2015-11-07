@@ -29,14 +29,15 @@ class Band extends Submission{
 
 		return Scraper.getHTML(url).then(window => {
 			this.log("Received: Main data");
-
+			let promises    = [];
+			
 			let document    = window.document;
 			let $           = s => document.querySelector(s);
 			let optionText  = s => {
 				let el = $(s);
 				return el.options[el.selectedIndex].textContent;
 			};
-
+			
 			/** Start pulling out vitals */
 			this.name       = $("#bandName").value;
 			this.genre      = $("#genre").value;
@@ -64,8 +65,11 @@ class Band extends Submission{
 			let labels      = this.getLabels(window);
 			if(labels.length){
 				this.labels = labels;
-				Promise.all(labels.map(l => l.load()));
+				promises.push(...labels.map(l => l.load()));
 			}
+			
+			this.log("Done: Main data");
+			return Promise.all(promises);
 		})
 	}
 
@@ -82,13 +86,13 @@ class Band extends Submission{
 
 		return Scraper.getHTML(url).then(window => {
 			this.log("Received: Peripherals");
+			let promises = [];
 
-			/** Load dates that the resource was last modified/created */
-			let promises = this.parseAuditTrail(window);
-
-			/** Load the data of any users mentioned in the page's footer */
-			if(promises.length)
-				return Promise.all(promises);
+			/** Load dates the band was last modified/created */
+			promises.push(...(this.parseAuditTrail(window)));
+			
+			this.log("Done: Peripherals");
+			return Promise.all(promises);
 		});
 	}
 
@@ -106,17 +110,18 @@ class Band extends Submission{
 		return Scraper.getHTML(url).then(window => {
 			this.log("Received: Members/Line-up");
 
-			let promises  = Promise.resolve();
+			let promises  = [];
 			let document  = window.document;
 			let roles     = document.querySelectorAll("tr[id^='artist_']");
 
 			for(let row of roles){
 				let id       = row.id.match(/_(\d+)$/)[1];
 				let roles    = document.querySelector("#roleList_" + id);
-				promises.then( new Member(id, this).load([row, roles]) );
+				promises.push( new Member(id, this).load([row, roles]) );
 			}
 			
-			return promises;
+			this.log("Done: Members/Line-up");
+			return Promise.all(promises);
 		});
 	}
 
