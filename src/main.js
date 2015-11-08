@@ -26,7 +26,7 @@ Scraper.init(username, password)
 		}
 		
 		try{
-			new Release(514764).load()
+			new Release(544104).load()
 				.catch(e => Feedback.error(e))
 				.then(() => {
 					console.log('Done!');

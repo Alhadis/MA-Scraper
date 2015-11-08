@@ -21,6 +21,17 @@ class Resource{
 
 
 	/**
+	 * Return a list of every instance created with this resource type.
+	 *
+	 * @return {Array}
+	 * @static
+	 */
+	static getAll(){
+		return instances.get(this) || {};
+	}
+
+
+	/**
 	 * Stores a globally-accessible reference to a resource instance
 	 *
 	 * @param {String}   id       - Resource's unique identifier

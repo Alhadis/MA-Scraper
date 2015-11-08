@@ -4,6 +4,7 @@ import Scraper     from "./scraper.js";
 import Submission  from "./submission.js";
 import Band        from "./band.js";
 import Label       from "./label.js";
+import Track       from "./track.js";
 
 
 class Release extends Submission{
@@ -33,13 +34,20 @@ class Release extends Submission{
 			let document    = window.document;
 			let $           = s => document.querySelector(s);
 			let optionText  = s => {
-				let el = $(s);
+				let el = "string" === typeof s ? $(s) : s;
 				return el.options[el.selectedIndex].textContent;
 			};
 
+
+			/** Release type */
+			let releaseTypes   = $("#typeId");
+			let releaseType    = releaseTypes.options[releaseTypes.selectedIndex];
+			let multipleBands  = +releaseType.getAttribute("data-multiple-bands");
+			let bandsPerTrack  = +releaseType.getAttribute("data-band-per-track");
+
 			/** Begin ripping out vitals */
 			this.name          = $("#releaseName").value;
-			this.type          = optionText("#typeId");
+			this.type          = releaseType.textContent;
 			this.date          = this.parseDate(window, "#releaseDateDay", "#releaseDateMonth", "#releaseDateYear");
 			this.catId         = $("#catalogNumber").value;
 			this.limitation    = $("#nbCopies").value;
@@ -60,15 +68,78 @@ class Release extends Submission{
 				promises.push(this.labels[0].load());
 			}
 			
+			/** Components */
+			this.components    = [];
+			let fieldsets      = document.querySelectorAll("#tracklist > tbody");
+			for(let i of fieldsets){
+				let component = {
+					title: (i.querySelector(".componentTitle") || {}).value
+				};
+				
+				/** Physical format */
+				let format       = i.querySelector("select[name^=formats]");
+				let activeFormat = format.options[format.selectedIndex];
+				let hasSides     = +activeFormat.getAttribute("data-sides");
+				let hasRPM       = +activeFormat.getAttribute("data-rpm");
+				let hasSizes     = +activeFormat.getAttribute("data-sizes");
+				component.format = +format.value ? optionText(format) : "";
+				
+				/** Properties of physical formats */
+				if(hasRPM)    component.rpm   = (i.querySelector("select[name^=rpm]")  || {}).value;
+				if(hasSizes)  component.size  = (i.querySelector("select[name^=size]") || {}).value;
+				if(hasSides){
+					let titles            = Array.from(i.querySelectorAll("input[name^=sideTitle]"));
+					component.titles      = titles.map(e => e.value);
+					component.doubleSided = !!(i.querySelector("input[name^=chkSameSongs]") || {}).checked;
+					component.singleSided = !!(i.querySelector("input[name^=chkOnlySideA]") || {}).checked;
+					
+					/** Don't bother storing a titles array if they're all blank */
+					if(component.titles.every(e => e === ""))
+						delete component.titles;
+				}
+				
+				let discNumber   = this.components.push(component);
+
+
+				/** Side markers */
+				let sideIndices  = [];
+				if(hasSides){
+					Array.from(i.querySelectorAll(".sideHeader")).forEach((s, index) => {
+						let sideLetter = (s.textContent.match(/^\s*Side\s+(\w+)/i) || {})[1] || "ABCDEFGH"[index];
+						sideIndices[s.sectionRowIndex] = sideLetter;
+					});
+				}
+				
+				/** Tracklist */
+				let tracks       = i.querySelectorAll(".track");
+				for(let t of tracks){
+					let id       = t.id.match(/\d+$/)[0];
+					let band     = t.querySelector(".trackSplitBands");
+					new Track(id).load({
+						name:         t.querySelector(".trackTitleField").value,
+						length:       t.querySelector("#length_"         + id).value,
+						lyrics:       i.querySelector("#lyricsBox_"      + id).value,
+						instrumental: t.querySelector("#isInstrumental_" + id).checked,
+						bonus:        t.querySelector("#isBonus_"        + id).checked,
+						release:      this.id,
+						index:        +t.querySelector(".trackNumberField").value,
+						disc:         discNumber,
+						band:         bandsPerTrack ? band.value.replace(/^@/, "") : null,
+						side:         !hasSides ? null : sideIndices.slice(0, t.sectionRowIndex).filter(o => o).pop()
+					});
+				}
+			}
+			
+			
 			this.log("Done: Main data");
 			return Promise.all(promises);
 		});
 	}
 	
-	
+		
 	
 	/**
-	 * Load auxiliary band data not accessible from the edit page (e.g., timestamps)
+	 * Load auxiliary release data not accessible from the edit page (e.g., timestamps)
 	 *
 	 * @return {Promise}
 	 */
@@ -79,6 +150,9 @@ class Release extends Submission{
 		return Scraper.getHTML(url).then(window => {
 			this.log("Received: Peripherals");
 			let promises    = [];
+			
+			/** Load the release's timestamps */
+			promises.push(...(this.parseAuditTrail(window)));
 			
 			return Promise.all(promises);
 		});

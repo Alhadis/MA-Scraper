@@ -140,7 +140,10 @@ let example	=	{
 					rpm: "33⅓",
 					size: 7,
 					doubleSided: false,
-					singleSided: false
+					singleSided: false,
+					titles: [
+						"Side A", "Side B"
+					]
 				}
 			]
 		}
