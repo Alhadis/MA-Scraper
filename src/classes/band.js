@@ -104,25 +104,10 @@ class Band extends Submission{
 	 * @return {Promise}
 	 */
 	loadMembers(){
-		this.log("Loading: Members/Line-up");
-		let url = `http://www.metal-archives.com/lineup/edit-artists/bandId/${this.id}/typeId/1/releaseId/0`;
-		
-		return Scraper.getHTML(url).then(window => {
-			this.log("Received: Members/Line-up");
-
-			let promises  = [];
-			let document  = window.document;
-			let roles     = document.querySelectorAll("tr[id^='artist_']");
-
-			for(let row of roles){
-				let id       = row.id.match(/_(\d+)$/)[1];
-				let roles    = document.querySelector("#roleList_" + id);
-				promises.push( new Member(id, this).load([row, roles]) );
-			}
-			
-			this.log("Done: Members/Line-up");
-			return Promise.all(promises);
-		});
+		return Promise.all([
+			this::Member.loadLineup(Member.TYPE_MAIN),
+			this::Member.loadLineup(Member.TYPE_LIVE)
+		]);
 	}
 
 

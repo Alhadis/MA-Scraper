@@ -129,6 +129,47 @@ class Member extends Resource{
 		/** Load the artist and return the resulting Promise */
 		return this.artist.load();
 	}
+	
+	
+	
+	
+	/**
+	 * Load a list of members associated with a resource.
+	 *
+	 * @param {Number} type - Member.TYPE_* constant describing the type of line-up to load
+	 * @return {Promise}
+	 */
+	static loadLineup(type){
+		let label = "Line-up (" + {
+			[Member.TYPE_MAIN]:  "Main members",
+			[Member.TYPE_GUEST]: "Guest/Session",
+			[Member.TYPE_LIVE]:  "Live members",
+			[Member.TYPE_MISC]:  "Misc staff"
+		}[type] + ")";
+		
+		this.log("Loading: " + label);
+		
+		let releaseId = this instanceof Release ? this.id : 0;
+		let bandId    = this instanceof Band    ? this.id : "_";
+		let url       = `http://www.metal-archives.com/lineup/edit-artists/bandId/${bandId}/typeId/${type}/releaseId/${releaseId}`;
+		
+		return Scraper.getHTML(url).then(window => {
+			this.log("Received: " + label);
+
+			let promises  = [];
+			let document  = window.document;
+			let roles     = document.querySelectorAll("tr[id^='artist_']");
+
+			for(let row of roles){
+				let id       = row.id.match(/_(\d+)$/)[1];
+				let roles    = document.querySelector("#roleList_" + id);
+				promises.push( new Member(id, this).load([row, roles]) );
+			}
+			
+			this.log("Done: " + label);
+			return Promise.all(promises);
+		});
+	}
 }
 
 /** Member type constants */

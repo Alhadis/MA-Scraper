@@ -4,6 +4,7 @@ import Scraper     from "./scraper.js";
 import Submission  from "./submission.js";
 import Band        from "./band.js";
 import Label       from "./label.js";
+import Member      from "./member.js";
 import Track       from "./track.js";
 
 
@@ -12,7 +13,8 @@ class Release extends Submission{
 	load(){
 		return super.load([
 			this.loadCore,
-			this.loadPeripherals
+			this.loadPeripherals,
+			this.loadMembers
 		]);
 	}
 	
@@ -156,6 +158,21 @@ class Release extends Submission{
 			
 			return Promise.all(promises);
 		});
+	}
+	
+	
+	
+	/**
+	 * Load the artists who recorded on or contributed to the release.
+	 *
+	 * @return {Promise}
+	 */
+	loadMembers(){
+		return Promise.all([
+			this::Member.loadLineup(Member.TYPE_MAIN),
+			this::Member.loadLineup(Member.TYPE_GUEST),
+			this::Member.loadLineup(Member.TYPE_MISC)
+		]);
 	}
 	
 	
