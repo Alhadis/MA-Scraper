@@ -49,7 +49,14 @@ class User extends Resource{
 
 			let document     = window.document;
 			let $            = s => document.querySelector(s);
-
+			
+			/** Bail early if the user's deactivated their account */
+			if(/^Error 404/i.test(document.title)){
+				this.deactivated = true;
+				return;
+			}
+			
+			
 			/** If .name is blank, it means it's still sitting in .id because we haven't retrieved the numeric ID yet */
 			if(!this.name){
 				let source   = document.documentElement.innerHTML;
