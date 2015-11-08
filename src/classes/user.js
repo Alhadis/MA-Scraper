@@ -122,7 +122,7 @@ class User extends Resource{
 			this.points      = info["Points"];
 			this.email       = info["Email address"];
 			this.fullName    = info["Full name"];
-			this.gender      = info["Gender"][0];
+			this.gender      = (info["Gender"] || "")[0];
 			this.age         = info["Age"];
 			this.country     = info["Country"];
 			this.url         = info["Homepage"];
