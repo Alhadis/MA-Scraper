@@ -6,6 +6,14 @@ import Submission  from "./submission.js";
 
 class Label extends Submission{
 	
+	objectTypeID = 2;
+	
+	
+	/**
+	 * Load the label's data from Metal Archives.
+	 *
+	 * @return {Promise}
+	 */
 	load(){
 		return super.load([
 			this.loadCore,

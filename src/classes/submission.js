@@ -10,8 +10,10 @@ import User      from "./user.js";
  * Examples include bands, labels, releases and artist pages.
  */
 class Submission extends Resource{
-
-
+	
+	objectTypeID = 0;
+	
+	
 	/**
 	 * Pull creation/modification times from the page's footer.
 	 *

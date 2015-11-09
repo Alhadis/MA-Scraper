@@ -10,6 +10,14 @@ import Track       from "./track.js";
 
 class Release extends Submission{
 	
+	objectTypeID = 4;
+	
+	
+	/**
+	 * Load a release's details from Metal Archives.
+	 *
+	 * @return {Promise}
+	 */
 	load(){
 		return super.load([
 			this.loadCore,

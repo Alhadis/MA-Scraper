@@ -8,6 +8,9 @@ import Member      from "./member.js";
 
 class Artist extends Submission{
 	
+	objectTypeID = 3;
+	
+	
 	/**
 	 * Loads this artist's data from Metal Archives.
 	 *

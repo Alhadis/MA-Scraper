@@ -7,7 +7,15 @@ import Member      from "./member.js";
 
 
 class Band extends Submission{
-
+	
+	objectTypeID = 1;
+	
+	
+	/**
+	 * Load the band's data from Metal Archives.
+	 *
+	 * @return {Promise}
+	 */
 	load(){
 		return super.load([
 			this.loadCore,

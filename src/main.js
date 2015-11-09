@@ -7,6 +7,7 @@ import Feedback  from "./classes/feedback.js";
 import Release   from "./classes/release.js";
 import Resource  from "./classes/resource.js";
 import Member    from "./classes/member.js";
+import Report    from "./classes/report.js";
 
 let creds      = JSON.parse(fs.readFileSync(".devrc.json"));
 let username   = creds.username;
@@ -26,7 +27,7 @@ Scraper.init(username, password)
 		}
 		
 		try{
-			new Release(1759).load()
+			new Report(540852).load()
 				.catch(e => Feedback.error(e))
 				.then(() => {
 					console.log('Done!');
