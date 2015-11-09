@@ -1,6 +1,6 @@
 "use strict";
 
-import Feedback from "./feedback.js";
+import Feedback from "../app/feedback.js";
 
 let instances	= new Map();
 

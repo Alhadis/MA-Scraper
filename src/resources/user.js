@@ -1,8 +1,8 @@
 "use strict";
 
-import Scraper  from "./scraper.js";
+import Scraper  from "../app/scraper.js";
+import Feedback from "../app/feedback.js";
 import Resource from "./resource.js";
-import Feedback from "./feedback.js";
 
 
 /** Role-type constants */

@@ -1,6 +1,6 @@
 "use strict";
 
-import Scraper  from "./scraper.js";
+import Scraper  from "../app/scraper.js";
 import Resource from "./resource.js";
 import User     from "./user.js";
 

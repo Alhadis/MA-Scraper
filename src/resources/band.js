@@ -1,6 +1,6 @@
 "use strict";
 
-import Scraper     from "./scraper.js";
+import Scraper     from "../app/scraper.js";
 import Submission  from "./submission.js";
 import Label       from "./label.js";
 import Member      from "./member.js";

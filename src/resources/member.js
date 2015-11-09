@@ -1,6 +1,6 @@
 "use strict";
 
-import Scraper  from "./scraper.js";
+import Scraper  from "../app/scraper.js";
 import Artist   from "./artist.js";
 import Band     from "./band.js";
 import Release  from "./release.js";

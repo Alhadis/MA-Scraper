@@ -1,19 +1,26 @@
 "use strict";
 
-import Band      from "./classes/band.js";
-import Artist    from "./classes/artist.js";
-import Scraper   from "./classes/scraper.js";
-import Feedback  from "./classes/feedback.js";
-import Release   from "./classes/release.js";
-import Resource  from "./classes/resource.js";
-import Member    from "./classes/member.js";
-import Report    from "./classes/report.js";
+/** App-specific logic */
+import Scraper   from "./app/scraper.js";
+import Feedback  from "./app/feedback.js";
 
+/** Resource definitions */
+import Band      from "./resources/band.js";
+import Artist    from "./resources/artist.js";
+import Release   from "./resources/release.js";
+import Resource  from "./resources/resource.js";
+import Member    from "./resources/member.js";
+import Report    from "./resources/report.js";
+
+
+/** Runtime configuration */
 let creds      = JSON.parse(fs.readFileSync(".devrc.json"));
 let username   = creds.username;
 let password   = creds.password;
 let cookie     = creds.cookie;
 
+
+/** Login and get rockin' */
 Scraper.cookie = cookie;
 Scraper.init(username, password)
 	.catch(e => { Scraper.invalid = true; Feedback.error(e); })
@@ -27,7 +34,7 @@ Scraper.init(username, password)
 		}
 		
 		try{
-			new Report(540852).load()
+			new Band(3540334729).load()
 				.catch(e => Feedback.error(e))
 				.then(() => {
 					console.log('Done!');
