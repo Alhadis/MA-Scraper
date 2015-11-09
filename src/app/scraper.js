@@ -134,6 +134,27 @@ class Scraper{
 			});
 		});
 	}
+	
+	
+	
+	/**
+	 * Asynchronously loads a page as a plain-text document.
+	 *
+	 * @param {String} url - Absolute URL of the page to retrieve
+	 * @return {Promise}
+	 */
+	static get(url){
+		
+		return new Promise((resolve, reject) => {
+			let args = {headers: {cookie: this.cookie}};
+			
+			fetch(url, args)
+				.catch(error => reject(error))
+				.then(result => {
+					result.text().then(text => resolve(text, result));
+				});
+		});
+	}
 }
 
 

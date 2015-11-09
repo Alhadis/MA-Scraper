@@ -11,6 +11,7 @@ import Release   from "./resources/release.js";
 import Resource  from "./resources/resource.js";
 import Member    from "./resources/member.js";
 import Report    from "./resources/report.js";
+import History   from "./data-lists/history.js";
 
 
 /** Runtime configuration */
@@ -34,12 +35,19 @@ Scraper.init(username, password)
 		}
 		
 		try{
-			new Band(3540334729).load()
+			let Slayer = new Band(72);
+			
+			new History(Slayer).load()
+				.catch(e       => Feedback.error(e))
+				.then(result   => console.log(result));
+			
+			/*
+			Alturiak.load()
 				.catch(e => Feedback.error(e))
 				.then(() => {
 					console.log('Done!');
 					creds.listOnExit && Resource.list();
 				});
-
+			*/
 		} catch(e){ Feedback.error(e); }
 	});
