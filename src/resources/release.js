@@ -23,7 +23,8 @@ class Release extends Submission{
 			this.loadCore,
 			this.loadPeripherals,
 			this.loadMembers,
-			this.loadReports
+			this.loadReports,
+			this.loadHistory
 		]);
 	}
 	

@@ -22,7 +22,8 @@ class Artist extends Submission{
 		return super.load([
 			this.loadCore,
 			this.loadPeripherals,
-			this.loadReports
+			this.loadReports,
+			this.loadHistory
 		]);
 	}
 	

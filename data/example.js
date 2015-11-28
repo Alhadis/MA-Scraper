@@ -320,9 +320,9 @@ let example	=	{
 			ip: "124.181.101.72",
 			note: "Modified activity period",
 			details: [
-				["Version description", "", "CD-R"],
-				["Nb copies", "", "50"],
-				["Notes", "CDr, limited to 50 copies."]
+				{field: "Version description", new: "CD-R"},
+				{field: "Nb copies",           new: "50"},
+				{field: "Notes",               new: "CDr, limited to 50 copies."}
 			],
 			for: {
 				id: 3540334729,

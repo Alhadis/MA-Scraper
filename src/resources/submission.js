@@ -1,9 +1,11 @@
 "use strict";
 
+import History    from "../data-lists/history.js";
 import ReportList from "../data-lists/report-list.js";
 import Resource   from "./resource.js";
 import Report     from "./report.js";
 import User       from "./user.js";
+import Edit       from "./edit.js";
 
 
 /**
@@ -139,6 +141,30 @@ class Submission extends Resource{
 					report.by = new User(submitter);
 				
 				promises.push(report.load());
+			}
+			
+			return Promise.all(promises);
+		});
+	}
+	
+	
+	
+	/**
+	 * Load the instance's modification history.
+	 *
+	 * @return {Promise}
+	 */
+	loadHistory(){
+		this.log("Loading: History");
+		
+		return new History(this).load().then(result => {
+			this.log("Finished: History");
+			let promises = [];
+			
+			for(let i of result.data){
+				let edit = new Edit(i);
+				edit.for.add(this);
+				promises.push(edit.load());
 			}
 			
 			return Promise.all(promises);
