@@ -1,9 +1,11 @@
 "use strict";
 
+import Scraper    from "../app/scraper.js";
 import History    from "../data-lists/history.js";
 import ReportList from "../data-lists/report-list.js";
 import Resource   from "./resource.js";
 import Report     from "./report.js";
+import Link       from "./link.js";
 import User       from "./user.js";
 import Edit       from "./edit.js";
 
@@ -15,7 +17,8 @@ import Edit       from "./edit.js";
  */
 class Submission extends Resource{
 	
-	objectTypeID = 0;
+	objectTypeID   = 0;
+	objectTypeName = "";
 	
 	
 	/**
@@ -167,6 +170,52 @@ class Submission extends Resource{
 				promises.push(edit.load());
 			}
 			
+			return Promise.all(promises);
+		});
+	}
+	
+	
+	
+	/**
+	 * Load the instance's "Related Links" section.
+	 *
+	 * @return {Promise}
+	 */
+	loadLinks(){
+		this.log("Loading: Links");
+		let url = `http://www.metal-archives.com/link/ajax-list/type/${this.objectTypeName}/id/${this.id}`;
+		
+		return Scraper.getHTML(url).then(window => {
+			this.log("Received: Links");
+			let promises     = [];
+			
+			let document     = window.document;
+			let $            = s => document.querySelector(s);
+			let $$           = s => document.querySelectorAll(s);
+
+			/** Get a list of every category we have links for */
+			let categoryList = $$("#band_links > ul a");
+			for(let i of categoryList){
+				let type     = i.textContent;
+				
+				/** Fetch the links for this category */
+				let block    = $("#" + i.href.match(/#(.+)$/)[1]);
+				let table    = block.querySelector("table[id^='linksTable']");
+				
+				for(let r of Array.from(table.rows)){
+					let id   = +r.cells[0].innerHTML.match(/loadLinkForm\((\d+)\)/)[1];
+					let a    = $("#link"+id);
+					new Link({
+						id,
+						url:   a.href,
+						name:  a.textContent,
+						type:  type,
+						for:   this
+					});
+				}
+			}
+			
+			this.log("Done: Links");
 			return Promise.all(promises);
 		});
 	}

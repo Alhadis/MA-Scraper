@@ -3,14 +3,6 @@
 import DataList from "./data-list.js";
 
 
-const typeNames = {
-	1: "band",
-	2: "label",
-	3: "person",
-	4: "release"
-};
-
-
 /**
  * Modification history for a band, artist, label or release.
  */
@@ -18,7 +10,7 @@ class History extends DataList{
 	
 	constructor(forObject){
 		let id    = forObject.id;
-		let type  = typeNames[forObject.objectTypeID];
+		let type  = forObject.objectTypeName;
 		let url   = `http://www.metal-archives.com/history/ajax-view/id/${id}/type/${type}/mode/page/filter/all`;
 		super(url);
 	}

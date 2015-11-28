@@ -10,7 +10,8 @@ import Track       from "./track.js";
 
 class Release extends Submission{
 	
-	objectTypeID = 4;
+	objectTypeID   = 4;
+	objectTypeName = "release";
 	
 	
 	/**

@@ -6,7 +6,8 @@ import Submission  from "./submission.js";
 
 class Label extends Submission{
 	
-	objectTypeID = 2;
+	objectTypeID   = 2;
+	objectTypeName = "label";
 	
 	
 	/**
@@ -19,7 +20,8 @@ class Label extends Submission{
 			this.loadCore,
 			this.loadPeripherals,
 			this.loadReports,
-			this.loadHistory
+			this.loadHistory,
+			this.loadLinks
 		]);
 	}
 	

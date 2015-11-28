@@ -4,12 +4,12 @@ import Scraper     from "../app/scraper.js";
 import Submission  from "./submission.js";
 import Label       from "./label.js";
 import Member      from "./member.js";
-import Link        from "./link.js";
 
 
 class Band extends Submission{
 	
-	objectTypeID = 1;
+	objectTypeID   = 1;
+	objectTypeName = "band";
 	
 	
 	/**
@@ -120,52 +120,6 @@ class Band extends Submission{
 			this::Member.loadLineup(Member.TYPE_MAIN),
 			this::Member.loadLineup(Member.TYPE_LIVE)
 		]);
-	}
-	
-	
-	
-	/**
-	 * Load the band's "Related Links" section
-	 *
-	 * @return {Promise}
-	 */
-	loadLinks(){
-		this.log("Loading: Links");
-		let url = `http://www.metal-archives.com/link/ajax-list/type/band/id/${this.id}`;
-		
-		return Scraper.getHTML(url).then(window => {
-			this.log("Received: Links");
-			let promises     = [];
-			
-			let document     = window.document;
-			let $            = s => document.querySelector(s);
-			let $$           = s => document.querySelectorAll(s);
-
-			/** Get a list of every category we have links for */
-			let categoryList = $$("#band_links > ul a");
-			for(let i of categoryList){
-				let type     = i.textContent;
-				
-				/** Fetch the links for this category */
-				let block    = $("#" + i.href.match(/#(.+)$/)[1]);
-				let table    = block.querySelector("table[id^='linksTable']");
-				
-				for(let r of Array.from(table.rows)){
-					let id   = +r.cells[0].innerHTML.match(/loadLinkForm\((\d+)\)/)[1];
-					let a    = $("#link"+id);
-					new Link({
-						id,
-						url:   a.href,
-						name:  a.textContent,
-						type:  type,
-						for:   this
-					});
-				}
-			}
-			
-			this.log("Done: Links");
-			return Promise.all(promises);
-		});
 	}
 
 

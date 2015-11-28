@@ -8,7 +8,8 @@ import Member      from "./member.js";
 
 class Artist extends Submission{
 	
-	objectTypeID = 3;
+	objectTypeID   = 3;
+	objectTypeName = "person";
 	
 	
 	/**
@@ -23,7 +24,8 @@ class Artist extends Submission{
 			this.loadCore,
 			this.loadPeripherals,
 			this.loadReports,
-			this.loadHistory
+			this.loadHistory,
+			this.loadLinks
 		]);
 	}
 	
