@@ -90,16 +90,16 @@ class Resource{
 	 * @return {Promise}
 	 */
 	load(callbacks = []){
-		let p = [];
+		let promises = [];
 
 		if(!this.loaded){
 			this.log("Load started");
 			this.loaded = true;
-			p = Promise.all(callbacks.map(o => this::o()));
+			promises = callbacks.map(o => this::o());
 		}
 
 		else this.log("Already loaded");
-		return p;
+		return Promise.all(promises);
 	}
 
 

@@ -4,6 +4,8 @@ import Scraper     from "../app/scraper.js";
 import Submission  from "./submission.js";
 import Label       from "./label.js";
 import Member      from "./member.js";
+import User        from "./user.js";
+import Vote        from "./vote.js";
 
 
 class Band extends Submission{
@@ -24,7 +26,8 @@ class Band extends Submission{
 			this.loadMembers,
 			this.loadReports,
 			this.loadHistory,
-			this.loadLinks
+			this.loadLinks,
+			this.loadRecommendations
 		]);
 	}
 
@@ -88,7 +91,7 @@ class Band extends Submission{
 
 
 	/**
-	 * Loads auxiliary band data not accessible from the edit page (e.g., timestamps)
+	 * Load auxiliary band data not accessible from the edit page (e.g., timestamps)
 	 *
 	 * @return {Promise}
 	 */
@@ -104,6 +107,41 @@ class Band extends Submission{
 			promises.push(...(this.parseAuditTrail(window)));
 			
 			this.log("Done: Peripherals");
+			return Promise.all(promises);
+		});
+	}
+	
+	
+	
+	/**
+	 * Load bands that users have rated as similar to this one.
+	 *
+	 * @return {Promise}
+	 */
+	loadRecommendations(){
+		this.log("Loading: Similar artists");
+		let url = `http://www.metal-archives.com/recommendation/edit/bandId/${this.id}`;
+		
+		return Scraper.getHTML(url).then(window => {
+			this.log("Received: Similar artists");
+			let promises   = [];
+			
+			let document   = window.document;
+			let $          = s => document.querySelector(s);
+			let list       = $("#artist_list");
+			
+			
+			/** There're no ratings here */
+			if(!list) this.log("No artist recommendations found");
+				
+			/** Start going through all the recommended bands */
+			else{
+				let rows = Array.from(list.tBodies[0].rows);
+				for(let r of rows)
+					promises.push(this.getVotes(r));
+			}
+			
+			this.log("Done: Similar artists");
 			return Promise.all(promises);
 		});
 	}
@@ -173,6 +211,52 @@ class Band extends Submission{
 			output.push(new Label(labelId));
 
 		return output;
+	}
+	
+	
+	
+	/**
+	 * Load the details of a single band recommendation.
+	 *
+	 * @param {HTMLElement} el - HTML row of the "Similar Artists" list containing the data
+	 * @return {Promise}
+	 */
+	getVotes(el){
+		let band = new Band(el.id.match(/_(\d+)$/)[1]);
+		
+		/** If this band's not been loaded yet, grab what data we can */
+		if(!band.loaded){
+			band.name    = el.cells[1].textContent;
+			band.country = el.cells[2].firstElementChild.href.match(/\w+$/)[0];
+			band.genre   = el.cells[3];
+		}
+		
+		let url = `http://www.metal-archives.com/recommendation/ajax-user-votes/bandId/${this.id}/recBandId/${band.id}`;
+		this.log("Loading: Users who recommend " + band.name);
+		
+		return Scraper.getHTML(url).then(window => {
+			this.log("Received: Users who recommed " + band.name);
+			let promises   = [];
+			
+			let document   = window.document;
+			let pattern    = /^\s*The following user\(s\) voted (\w+)/i;
+			let getVoters  = (users, score) => {
+				for(let i of users){
+					let user  = new User(i.textContent);
+					promises.push(user.load().then(r => new Vote(user, [this.id, band.id], score)));
+				}
+			};
+			
+			for(let i of document.querySelectorAll("h5")){
+				let next = i.nextElementSibling;
+				switch((i.textContent.match(pattern) || [])[1]){
+					case "FOR":      getVoters( next.querySelectorAll("a"),  1 ); break;
+					case "AGAINST":  getVoters( next.querySelectorAll("a"), -1 ); break;
+				}
+			}
+			
+			return Promise.all(promises);
+		});
 	}
 }
 
