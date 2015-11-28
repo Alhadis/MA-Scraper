@@ -17,7 +17,8 @@ class Label extends Submission{
 	load(){
 		return super.load([
 			this.loadCore,
-			this.loadPeripherals
+			this.loadPeripherals,
+			this.loadReports
 		]);
 	}
 	

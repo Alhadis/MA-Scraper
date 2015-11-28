@@ -21,7 +21,8 @@ class Artist extends Submission{
 		this.saveListedBands = !!saveListedBands;
 		return super.load([
 			this.loadCore,
-			this.loadPeripherals
+			this.loadPeripherals,
+			this.loadReports
 		]);
 	}
 	

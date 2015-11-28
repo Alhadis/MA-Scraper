@@ -1,7 +1,9 @@
 "use strict";
 
-import Resource  from "./resource.js";
-import User      from "./user.js";
+import ReportList from "../data-lists/report-list.js";
+import Resource   from "./resource.js";
+import Report     from "./report.js";
+import User       from "./user.js";
 
 
 /**
@@ -102,6 +104,45 @@ class Submission extends Resource{
 			padZeroes(m.value || 0, 2),
 			padZeroes(d.value || 0, 2)
 		].join("-");
+	}
+	
+	
+	
+	/**
+	 * Load the submission's report history.
+	 *
+	 * @return {Promise}
+	 */
+	loadReports(){
+		
+		/** Skip this if we already know the submission has no report history */
+		if(false === this.haveReports){
+			this.log("Skipping: Reports");
+			return Promise.resolve();
+		}
+		
+		this.log("Loading: Reports");
+		let list = new ReportList(this);
+		
+		return list.load().then(result => {
+			this.log("Finished: Reports");
+			let promises      = [];
+			
+			for(let i of result.data){
+				let report    = new Report(+i[0].match(/href='[^']*?(\d+)'/i)[1]);
+				report.type   = i[1];
+				report.status = Report.statusByName(i[2]);
+				
+				/** Create a new User for the report's submitter, if it weren't a visitor */
+				let submitter = (i[3].match(/>([^<]+)<\/a>/i) || [])[1];
+				if(submitter)
+					report.by = new User(submitter);
+				
+				promises.push(report.load());
+			}
+			
+			return Promise.all(promises);
+		});
 	}
 }
 

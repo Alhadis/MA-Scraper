@@ -22,7 +22,8 @@ class Release extends Submission{
 		return super.load([
 			this.loadCore,
 			this.loadPeripherals,
-			this.loadMembers
+			this.loadMembers,
+			this.loadReports
 		]);
 	}
 	

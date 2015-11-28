@@ -19,6 +19,25 @@ const statusLabels        = {
 
 class Report extends Resource{
 	
+	/**
+	 * Return a STATUS_* constant from its named counterpart.
+	 *
+	 * @param {String} input - Report status's name, checked case-insensitively
+	 * @return {Number}
+	 */
+	static statusByName(input){
+		let name = input.toUpperCase();
+		for(let i in statusLabels)
+			if(name === statusLabels[i].toUpperCase()) return i;
+		return null;
+	}
+	
+
+	/**
+	 * Populate a Report instance's data properties.
+	 *
+	 * @return {Promise}
+	 */
 	load(){
 		return super.load([
 			this.loadCore
