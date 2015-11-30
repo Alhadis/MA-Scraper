@@ -39,7 +39,7 @@ Scraper.init(username, password)
 
 			Alturiak.load()
 				.then(() => {
-					console.log('Done!');
+					console.warn("Done!");
 					console.log(Exporter.JSON());
 					creds.listOnExit && Resource.list();
 				})

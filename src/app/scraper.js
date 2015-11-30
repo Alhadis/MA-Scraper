@@ -23,7 +23,7 @@ class Scraper{
 			
 			/** Skip everything if we've been given presupplied cookie data */
 			if(this.cookie){
-				console.info(`Using presupplied cookie data`);
+				console.warn(`Using presupplied cookie data`);
 				return resolve();
 			}
 						
