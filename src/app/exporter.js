@@ -6,6 +6,7 @@ import Band      from "../resources/band.js";
 import Artist    from "../resources/artist.js";
 import Member    from "../resources/member.js";
 import Release   from "../resources/release.js";
+import Review    from "../resources/review.js";
 import Track     from "../resources/track.js";
 import Link      from "../resources/link.js";
 import Label     from "../resources/label.js";
@@ -38,7 +39,7 @@ class Exporter{
 			links:     $(Link),
 			labels:    $(Label),
 			users:     $(User),
-			reviews:   null,
+			reviews:   $(Review),
 			reports:   $(Report),
 			history:   $(Edit),
 			recs:      $(Vote)

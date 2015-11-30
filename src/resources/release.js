@@ -6,6 +6,7 @@ import Band        from "./band.js";
 import Label       from "./label.js";
 import Member      from "./member.js";
 import Track       from "./track.js";
+import Review      from "./review.js";
 
 
 class Release extends Submission{
@@ -25,6 +26,7 @@ class Release extends Submission{
 			this.loadPeripherals,
 			this.loadMembers,
 			this.loadReports,
+			this.loadReviews,
 			this.loadHistory
 		]);
 	}
@@ -205,6 +207,29 @@ class Release extends Submission{
 			this::Member.loadLineup(Member.TYPE_GUEST),
 			this::Member.loadLineup(Member.TYPE_MISC)
 		]);
+	}
+	
+	
+	
+	/**
+	 * Load this release's reviews, if any.
+	 *
+	 * @return {Promise}
+	 */
+	loadReviews(){
+		this.log("Loading: Reviews");
+		let url = `http://www.metal-archives.com/reviews/_/_/${this.id}/`;
+		
+		return Scraper.getHTML(url).then(window => {
+			this.log("Received: Reviews");
+			let reviews  = window.document.querySelectorAll(".reviewBox");
+			
+			for(let i of Array.from(reviews))
+				new Review(i, this);
+			
+			this.log("Done: Reviews");
+			return Promise.resolve();
+		});
 	}
 	
 	
