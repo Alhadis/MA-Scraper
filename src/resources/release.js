@@ -32,7 +32,7 @@ class Release extends Submission{
 	
 	
 	/**
-	 * Loads the majority of the release's data.
+	 * Load the majority of the release's data.
 	 *
 	 * @return {Promise}
 	 */
@@ -80,6 +80,24 @@ class Release extends Submission{
 				this.labels = [new Label(label)];
 				promises.push(this.labels[0].load());
 			}
+			
+			/** Bands featured on this release */
+			this.for           = [];
+			let bandsList      = $(".trackSplitBands").children;
+			for(let i of Array.from(bandsList)){
+				
+				/** Reference to an unlisted band entry */
+				if(/^@/.test(i.value))
+					this.for.push(i.textContent);
+				
+				/** Regular/listed band */
+				else{
+					let band   = new Band(i.value);
+					band.name  = i.textContent;
+					this.for.push(band);
+				}
+			}
+
 			
 			/** Components */
 			this.components    = [];
@@ -259,7 +277,7 @@ class Release extends Submission{
 		if(this.recordingInfo)  result.recordingInfo  = this.recordingInfo;
 		if(this.identifiers)    result.identifiers    = this.identifiers;
 		if(this.warning)        result.warning        = this.warning;
-		if(haveBands)           result.for            = this.for;
+		if(haveBands)           result.for            = this.for.length === 1 ? this.for[0] : this.for;
 		if(this.components)     result.components     = this.components;
 		
 		return Object.assign(result, super.toJSON());
