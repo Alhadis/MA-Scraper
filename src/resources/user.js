@@ -61,7 +61,7 @@ class User extends Resource{
 			if(!this.name){
 				let source   = document.documentElement.innerHTML;
 				this.name    = this.id;
-				this.id      = source.match(/"http:\/\/www\.metal-archives\.com\/user\/tab-bands\/id\/(\d+)\/?"/i)[1];
+				this.id      = +source.match(/"http:\/\/www\.metal-archives\.com\/user\/tab-bands\/id\/(\d+)\/?"/i)[1];
 			}
 
 
@@ -140,6 +140,73 @@ class User extends Resource{
 			this.modNotes    = $('textarea[name="mod_notes"]').value;
 			this.role        = roles[this.rank];
 		});
+	}
+	
+	
+	
+	/**
+	 * Return a JSON-friendly representation of the User's data.
+	 *
+	 * @param {String} property
+	 * @return {Object}
+	 */
+	toJSON(property){
+		if(property) return super.toJSON(property);
+		
+		let result             = {};
+		let havePoints         = this.points || this.points === 0;
+		
+		if(this.id)            result.id           = this.id;
+		if(this.name)          result.name         = this.name;
+		if(this.rank)          result.rank         = this.rank;
+		if(havePoints)         result.points       = this.points;
+		if(this.email)         result.email        = this.email;
+		if(this.fullName)      result.fullName     = this.fullName;
+		if(this.gender)        result.gender       = this.gender;
+		if(this.age)           result.age          = this.age;
+		if(this.country)       result.country      = this.country;
+		if(this.url)           result.url          = this.url;
+		if(this.favGenres)     result.favGenres    = this.favGenres;
+		if(this.comments)      result.comments     = this.comments;
+		if(this.registered)    result.registered   = this.registered;
+		if(this.ip)            result.ip           = this.ip;
+		if(this.modNotes)      result.modNotes     = this.modNotes;
+		if(this.role)          result.role         = this.role;
+		if(this.deactivated)   result.deactivated  = true;
+		if(this.lists)         result.lists        = this.lists;
+		return result;
+	}
+	
+	
+	
+	/**
+	 * Export a JSON-friendly representation of every User instance that's been created.
+	 *
+	 * Analoguous to the superclass's method, except the returned hash enumerates users
+	 * by username, rather than their numeric/internal ID.
+	 *
+	 * @return {Object}
+	 */
+	static toJSON(){
+		let results   = {};
+		let instances = this.getAll();
+		
+		for(let i in instances){
+			let user     = instances[i];
+			let key      = user.name;
+			let value    = user.toJSON();
+			
+			/** User details haven't been loaded; rename the ID property so it makes more sense */
+			if(!key){
+				key        = user.id;
+				value.name = key;
+				delete value.id;
+			}
+			
+			results[key] = value;
+		}
+		
+		return results;
 	}
 }
 

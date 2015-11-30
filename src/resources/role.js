@@ -24,6 +24,25 @@ class Role extends Resource{
 			this.to     = dateTo.value;
 		}
 	}
+	
+	
+	/**
+	 * Return a JSON-friendly representation of the role's properties.
+	 *
+	 * This method exists chiefly to override the superclass's method, which would otherwise alias
+	 * the Role if it were keyed to another property. Unlike other Resource subclasses, Roles are
+	 * only referenced through the property of another class; that is, there's no need for them to
+	 * be abstracted in the sense that other resources are.
+	 *
+	 * @param {String} property
+	 * @return {Object}
+	 */
+	toJSON(property){
+		let result = {name: this.name};
+		if(this.from) result.from = this.from;
+		if(this.to)   result.to   = this.to;
+		return result;
+	}
 }
 
 

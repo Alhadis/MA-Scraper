@@ -124,11 +124,14 @@ class Release extends Submission{
 				}
 				
 				/** Tracklist */
-				let tracks       = i.querySelectorAll(".track");
-				for(let t of tracks){
+				this.tracks      = [];
+				for(let t of i.querySelectorAll(".track")){
 					let id       = t.id.match(/\d+$/)[0];
 					let band     = t.querySelector(".trackSplitBands");
-					new Track(id).load({
+					
+					let track    = new Track(id);
+					this.tracks.push(track);
+					track.load({
 						name:         t.querySelector(".trackTitleField").value,
 						length:       t.querySelector("#length_"         + id).value,
 						lyrics:       i.querySelector("#lyricsBox_"      + id).value,
@@ -225,6 +228,41 @@ class Release extends Submission{
 		});
 		
 		return bands.length === 1 ? bands[0] : bands;
+	}
+	
+	
+	
+	/**
+	 * Return a JSON-friendly representation of the release's data.
+	 *
+	 * @param {String} property
+	 * @return {Object}
+	 */
+	toJSON(property){
+		if(property) return super.toJSON(property);
+		
+		let result              = {};
+		let haveLabels          = this.labels && this.labels.length;
+		let haveBands           = this.for && this.for.length !== 0;
+		
+		if(this.name)           result.name           = this.name;
+		if(this.type)           result.type           = this.type;
+		if(this.date)           result.date           = this.date;
+		if(haveLabels)          result.labels         = this.labels;
+		if(this.catId)          result.catId          = this.catId;
+		if(this.limitation)     result.limitation     = this.limitation;
+		if(this.cover)          result.cover          = this.cover;
+		if(this.description)    result.description    = this.description;
+		if(this.separate)       result.separate       = this.separate;
+		if(this.locked)         result.locked         = true;
+		if(this.notes)          result.notes          = this.notes;
+		if(this.recordingInfo)  result.recordingInfo  = this.recordingInfo;
+		if(this.identifiers)    result.identifiers    = this.identifiers;
+		if(this.warning)        result.warning        = this.warning;
+		if(haveBands)           result.for            = this.for;
+		if(this.components)     result.components     = this.components;
+		
+		return Object.assign(result, super.toJSON());
 	}
 }
 

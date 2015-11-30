@@ -3,6 +3,7 @@
 /** App-specific logic */
 import Scraper   from "./app/scraper.js";
 import Feedback  from "./app/feedback.js";
+import Exporter  from "./app/exporter.js";
 
 /** Resource definitions */
 import Band      from "./resources/band.js";
@@ -35,13 +36,14 @@ Scraper.init(username, password)
 		
 		try{
 			let Alturiak = new Band(3540334729);
-			
+
 			Alturiak.load()
-				.catch(e => Feedback.error(e))
 				.then(() => {
 					console.log('Done!');
+					console.log(Exporter.JSON());
 					creds.listOnExit && Resource.list();
-				});
+				})
+				.catch(e => Feedback.error(e))
 
 		} catch(e){ Feedback.error(e); }
 	});

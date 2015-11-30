@@ -57,6 +57,29 @@ class Edit extends Resource{
 			}
 		});
 	}
+	
+	
+	
+	/**
+	 * Return a JSON-optimised representation of the modification's data.
+	 *
+	 * @param {String} property
+	 * @return {Object}
+	 */
+	toJSON(property){
+		if(property) return super.toJSON(property);
+		
+		let result       = {};
+		let haveDetails  = this.details && this.details.length;
+		if(this.on)      result.on       = this.on;
+		if(this.by)      result.by       = this.by;
+		if(this.ip)      result.ip       = this.ip;
+		if(this.note)    result.note     = this.note;
+		if(haveDetails)  result.details  = this.details;
+		if(this.for)     result.for      = this.for;
+		
+		return result;
+	}
 }
 
 

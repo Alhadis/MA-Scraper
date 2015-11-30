@@ -219,6 +219,30 @@ class Submission extends Resource{
 			return Promise.all(promises);
 		});
 	}
+	
+	
+	
+	/**
+	 * Return a JSON-friendly representation of this submission.
+	 *
+	 * This overrides the superclass's method to supply a little more information if
+	 * returning a reference to the submission data; instead of passing just the ID,
+	 * an object containing the instance's type and ID is returned instead.
+	 *
+	 * @param {String} property - Name of the property the instance is keyed to, if any
+	 * @return {Object}
+	 */
+	toJSON(property){
+		if(property) return {
+			id:   this.id,
+			type: this.objectTypeName
+		};
+		
+		let result = {};
+		if(this.added)     result.added    = this.added;
+		if(this.modified)  result.modified = this.modified;
+		return result;
+	}
 }
 
 

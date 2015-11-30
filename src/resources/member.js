@@ -132,6 +132,32 @@ class Member extends Resource{
 	
 	
 	
+	/**
+	 * Return a JSON-friendly representation of the instance's data.
+	 *
+	 * @param {String} property
+	 * @return {Object}
+	 */
+	toJSON(property){
+		if(property) return super.toJSON(property);
+		
+		let result = {
+			for:     this.for,
+			entity:  this.artist,
+			type:    this.type,
+			alias:   this.alias,
+			active:  this.active,
+			roles:   this.roles
+		};
+		
+		/** Don't leave clutter laying around */
+		if(!result.alias) delete result.alias;
+		
+		return result;
+	}
+	
+	
+	
 	
 	/**
 	 * Load a list of members associated with a resource.

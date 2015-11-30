@@ -28,6 +28,32 @@ class Track extends Resource{
 		
 		if(!this.band) delete this.band;
 		if(!this.side) delete this.side;
+		return Promise.resolve();
+	}
+	
+	
+	/**
+	 * Return a JSON-friendly representation of this track's data.
+	 *
+	 * @param {String} property
+	 * @return {Object}
+	 */
+	toJSON(property){
+		if(property) return super.toJSON(property);
+		
+		let result = {};
+		if(this.name)          result.name         = this.name;
+		if(this.length)        result.length       = this.length;
+		if(this.lyrics)        result.lyrics       = this.lyrics;
+		if(this.instrumental)  result.instrumental = true;
+		if(this.bonus)         result.bonus        = true;
+		if(this.release)       result.release      = this.release;
+		if(this.index)         result.index        = this.index;
+		if(this.disc)          result.disc         = this.disc;
+		if(this.band)          result.band         = this.band;
+		if(this.side)          result.side         = this.side;
+		
+		return result;
 	}
 }
 

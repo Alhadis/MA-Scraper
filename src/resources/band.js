@@ -228,7 +228,7 @@ class Band extends Submission{
 		if(!band.loaded){
 			band.name    = el.cells[1].textContent;
 			band.country = el.cells[2].firstElementChild.href.match(/\w+$/)[0];
-			band.genre   = el.cells[3];
+			band.genre   = el.cells[3].textContent;
 		}
 		
 		let url = `http://www.metal-archives.com/recommendation/ajax-user-votes/bandId/${this.id}/recBandId/${band.id}`;
@@ -257,6 +257,45 @@ class Band extends Submission{
 			
 			return Promise.all(promises);
 		});
+	}
+	
+	
+	/**
+	 * Return a JSON-friendly representation of the band's data.
+	 *
+	 * @param {String} property
+	 * @return {Object}
+	 */
+	toJSON(property){
+		if(property) return super.toJSON(property);
+		
+		let result               = {};
+		let haveActivity         = this.activity && Object.keys(this.activity).length;
+		let haveLabels           = this.labels   && this.labels.length;
+		
+		if(this.name)            result.name       = this.name;
+		if(this.genre)           result.genre      = this.genre;
+		if(this.status)          result.status     = this.status;
+		if(this.country)         result.country    = this.country;
+		if(this.location)        result.location   = this.location;
+		if(this.aka)             result.aka        = this.aka;
+		if(this.themes)          result.themes     = this.themes;
+		if(this.formed)          result.formed     = this.formed;
+		if(haveActivity)         result.activity   = this.activity;
+		if(this.unsigned)        result.unsigned   = true;
+		if(haveLabels)           result.labels     = this.labels;
+		if(this.logo)            result.logo       = this.logo;
+		if(this.photo)           result.photo      = this.photo;
+		if(this.notes)           result.notes      = this.notes;
+		if(this.evidence)        result.evidence   = this.evidence;
+		if(this.warning)         result.warning    = this.warning;
+		if(this.modNotes)        result.modNotes   = this.modNotes;
+		if(this.modStatus)       result.modStatus  = this.modStatus;
+		if(this.rejection)       result.rejection  = this.rejection;
+		if(this.digital)         result.digital    = true;
+		if(this.locked)          result.locked     = true;
+		
+		return Object.assign(result, super.toJSON());
 	}
 }
 

@@ -156,6 +156,27 @@ class Report extends Resource{
 		});
 	}
 	
+	
+	
+	/**
+	 * Return a JSON-friendly representation of the Report's data.
+	 *
+	 * @param {String} property
+	 * @return {Object}
+	 */
+	toJSON(property){
+		if(property) return super.toJSON(property);
+		
+		let result = {};
+		if(this.for)          result.for       = this.for;
+		if(this.type)         result.type      = this.type;
+		if(this.status)       result.status    = this.status;
+		if(this.assignee)     result.assignee  = this.assignee;
+		if(this.modNeeded)    result.modNeeded = true;
+		if(this.added)        result.added     = this.added;
+		if(this.comments)     result.comments  = this.comments;
+		return result;
+	}
 }
 
 export default Report;

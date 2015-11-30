@@ -28,7 +28,7 @@ class Label extends Submission{
 	
 
 	/**
-	 * Loads the majority of the band's details.
+	 * Load the majority of the label's details.
 	 *
 	 * @return {Promise}
 	 */
@@ -96,6 +96,43 @@ class Label extends Submission{
 			this.log("Done: Peripherals");
 			return Promise.all(promises);
 		})
+	}
+	
+	
+	
+	/**
+	 * Return a JSON-friendly representation of the label's data.
+	 *
+	 * @param {String} property
+	 * @return {Object}
+	 */
+	toJSON(property){
+		if(property) return super.toJSON(property);
+		
+		let result = {};
+		if(this.name)            result.name           = this.name;
+		if(this.status)          result.status         = this.status;
+		if(this.country)         result.country        = this.country;
+		if(this.aka)             result.aka            = this.aka;
+		if(this.parent)          result.parent         = this.parent;
+		if(this.specialty)       result.specialty      = this.specialty;
+		if(this.description)     result.description    = this.description;
+		if(this.url)             result.url            = this.url;
+		if(this.onlineShopping)  result.onlineShopping = true;
+		if(this.founded)         result.founded        = this.founded;
+		if(this.logo)            result.logo           = this.logo;
+		if(this.address)         result.address        = this.address;
+		if(this.phone)           result.phone          = this.phone;
+		if(this.email)           result.email          = this.email;
+		if(this.notes)           result.notes          = this.notes;
+		if(this.warning)         result.warning        = this.warning;
+		if(this.legit)           result.legit          = true;
+		
+		/** Delete bogus dates */
+		let bogusDate = "0000-00-00";
+		if(bogusDate === result.founded) delete result.founded;
+		
+		return Object.assign(result, super.toJSON());
 	}
 }
 

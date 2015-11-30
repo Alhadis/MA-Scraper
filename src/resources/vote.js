@@ -32,6 +32,19 @@ class Vote extends Resource{
 		this.score = score;
 	}
 	
+	
+	
+	/**
+	 * Return a JSON-optimised representation of the band recommendations's stats.
+	 *
+	 * Which, given the lack of everything due to not having normative IDs, is just a number.
+	 *
+	 * @param {String} property
+	 * @return {Object}
+	 */
+	toJSON(property){
+		return this.score;
+	}
 }
 
 

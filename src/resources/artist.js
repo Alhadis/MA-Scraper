@@ -184,6 +184,39 @@ class Artist extends Submission{
 		
 		return Promise.all(promises);
 	}
+	
+	
+	
+	/**
+	 * Return a JSON-friendly representation of the artist's data.
+	 *
+	 * @param {String} property
+	 * @return {Object}
+	 */
+	toJSON(property){
+		if(property) return super.toJSON(property);
+		
+		let result = {};
+		if(this.alias)    result.alias    = this.alias;
+		if(this.name)     result.name     = this.name;
+		if(this.born)     result.born     = this.born;
+		if(this.died)     result.died     = this.died;
+		if(this.diedOf)   result.diedOf   = this.diedOf;
+		if(this.country)  result.country  = this.country;
+		if(this.location) result.location = this.location;
+		if(this.gender)   result.gender   = this.gender;
+		if(this.photo)    result.photo    = this.photo;
+		if(this.bio)      result.bio      = this.bio;
+		if(this.notes)    result.notes    = this.notes;
+		if(this.warning)  result.warning  = this.warning;
+		
+		/** Delete bogus dates */
+		var bogusDate = "0000-00-00";
+		if(bogusDate === result.born) delete result.born;
+		if(bogusDate === result.died) delete result.died;
+		
+		return Object.assign(result, super.toJSON());
+	}
 }
 
 export default Artist;

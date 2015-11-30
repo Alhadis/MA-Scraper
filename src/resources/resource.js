@@ -21,9 +21,9 @@ class Resource{
 
 
 	/**
-	 * Return a list of every instance created with this resource type.
+	 * Return every instance created with this resource type.
 	 *
-	 * @return {Array}
+	 * @return {Object}
 	 * @static
 	 */
 	static getAll(){
@@ -122,6 +122,40 @@ class Resource{
 	 */
 	toString(){
 		return JSON.stringify(this);
+	}
+	
+	
+	
+	/**
+	 * Return a JSON-friendly representation of this resource.
+	 *
+	 * If the Resource is being serialised directly, the method will return an optimised
+	 * copy of its data with all irrelevant/empty properties removed. If the Resource is
+	 * being serialiesd as the property of another object, however, it returns its ID to
+	 * prevent infinite recursion.
+	 *
+	 * @param {String} property - Name of the property the instance is keyed to, if any
+	 * @return {Object}
+	 */
+	toJSON(property){
+		if(property) return this.id;
+		
+		return Object.assign({}, this);
+	}
+	
+	
+	
+	/**
+	 * Export a JSON-friendly representation of every instance created of this resource type.
+	 *
+	 * @return {Object}
+	 */
+	static toJSON(){
+		let results   = {};
+		let instances = this.getAll();
+		for(let i in instances)
+			results[instances[i].id] = instances[i].toJSON();
+		return results;
 	}
 }
 

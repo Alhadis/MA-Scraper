@@ -21,6 +21,24 @@ class Link extends Resource{
 		this.for  = args.for;
 	}
 	
+	
+	/**
+	 * Return a JSON-optimised representation of the Link's data.
+	 *
+	 * @param {String} property
+	 * @return {Object}
+	 */
+	toJSON(property){
+		if(property) return super.toJSON(property);
+		
+		let result   = {};
+		if(this.name)  result.name  = this.name;
+		if(this.url)   result.url   = this.url;
+		if(this.type)  result.type  = this.type;
+		if(this.for)   result.for   = this.for;
+		if(this.added) result.added = this.added;
+		return result;
+	}
 }
 
 
