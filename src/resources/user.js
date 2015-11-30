@@ -145,6 +145,37 @@ class User extends Resource{
 	
 	
 	/**
+	 * Gracefully set a User instance's internal/unique identifier.
+	 *
+	 * If the identifier's already been loaded, this method does nothing.
+	 *
+	 * @param {Number} id - User's internal/numeric ID
+	 * @return {Boolean}
+	 */
+	setID(id){
+		
+		/** Ignore any false input, not that we should be getting any */
+		if(!id){
+			this.log("Ignoring attempt to set invalid ID");
+			return false;
+		}
+		
+		/** Name property is defined, which means an ID was previously supplied. Do nothing. */
+		if(this.name){
+			this.log("Internal ID already defined");
+			return false;
+		}
+		
+		let name  = this.id;
+		this.id   = id;
+		this.name = name;
+		this.log(`Internal ID set to ${this.id}`);
+		return true;
+	}
+	
+	
+	
+	/**
 	 * Return a JSON-friendly representation of the User's data.
 	 *
 	 * @param {String} property

@@ -34,6 +34,10 @@ class Review extends Resource{
 			on:    new Date(date + " GMT").toISOString().replace(/[TZ]/g, " ").trim()
 		};
 		
+		/** Store the internal ID of the user who wrote the review */
+		let moveBtn  = el.querySelector(".reviewMove");
+		this.added.by.setID(parseInt(moveBtn.getAttribute("data-user")));
+		
 		
 		/** Save the submitter's IP address, if possible */
 		let ipLink   = metadata.querySelector("a[href*='/tools/ip-cross-ref']");
