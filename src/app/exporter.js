@@ -48,7 +48,7 @@ class Exporter{
 		let emptyProps = [];
 		for(let i in result){
 			let data = result[i];
-			if(!data || "[]" === data || "null" === data)
+			if(!data || !Object.keys(data).length)
 				emptyProps.push(i);
 		}
 		
