@@ -103,8 +103,8 @@ class Band extends Submission{
 			this.log("Received: Peripherals");
 			let promises = [];
 
-			/** Load dates the band was last modified/created */
-			promises.push(...(this.parseAuditTrail(window)));
+			/** Get the band's creation/modification details */
+			this.parseAuditTrail(window);
 			
 			this.log("Done: Peripherals");
 			return Promise.all(promises);

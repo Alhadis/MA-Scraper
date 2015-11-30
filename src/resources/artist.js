@@ -76,8 +76,8 @@ class Artist extends Submission{
 			/** Load involvements in other bands */
 			promises.push(this.loadBands(window, this.saveListedBands));
 			
-			/** Load the usual audit trail, etc */
-			promises.push(...(this.parseAuditTrail(window)));
+			/** Get the artist's creation/modification details */
+			this.parseAuditTrail(window);
 			
 			this.log("Done: Peripherals");
 			return Promise.all(promises);

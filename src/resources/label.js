@@ -90,8 +90,8 @@ class Label extends Submission{
 			this.log("Received: Peripherals");
 			let promises = [];
 			
-			/** Load dates that the resource was last modified/created */
-			promises.push(...(this.parseAuditTrail(window)));
+			/** Get the label's creation/modification details */
+			this.parseAuditTrail(window);
 			
 			this.log("Done: Peripherals");
 			return Promise.all(promises);

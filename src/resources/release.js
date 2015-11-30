@@ -185,8 +185,8 @@ class Release extends Submission{
 			this.log("Received: Peripherals");
 			let promises    = [];
 			
-			/** Load the release's timestamps */
-			promises.push(...(this.parseAuditTrail(window)));
+			/** Get the release's creation/modification details */
+			this.parseAuditTrail(window);
 			
 			return Promise.all(promises);
 		});
