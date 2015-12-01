@@ -403,6 +403,7 @@ class Release extends Submission{
 		if(this.limitation)     result.limitation     = this.limitation;
 		if(this.cover)          result.cover          = this.cover;
 		if(this.description)    result.description    = this.description;
+		if(this.authenticity)   result.authenticity   = this.authenticity;
 		if(this.separate)       result.separate       = this.separate;
 		if(this.locked)         result.locked         = true;
 		if(this.notes)          result.notes          = this.notes;
