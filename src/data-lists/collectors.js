@@ -74,7 +74,7 @@ class Collectors extends DataList{
 			}
 			
 			/** User never specified the release's version */
-			else if("Unspecified" === version){
+			else if("Unspecified" === version && !this.release.parent){
 				if(!list.some(i => i.id == releaseID))
 					list.push({
 						id:    releaseID,
