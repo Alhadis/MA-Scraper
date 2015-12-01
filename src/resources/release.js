@@ -116,9 +116,10 @@ class Release extends Submission{
 			this.components    = [];
 			let fieldsets      = document.querySelectorAll("#tracklist > tbody");
 			for(let i of fieldsets){
-				let component = {
-					title: (i.querySelector(".componentTitle") || {}).value
-				};
+				let component = {};
+				let compTitle = i.querySelector(".componentTitle") || {};
+				if(compTitle.value)
+					component.title = compTitle.value;
 				
 				/** Physical format */
 				let format       = i.querySelector("select[name^=formats]");
