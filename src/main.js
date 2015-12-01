@@ -35,7 +35,7 @@ Scraper.init(username, password)
 		}
 		
 		try{
-			let Alturiak = new Release(213978);
+			let Alturiak = new Release(548047);
 
 			Alturiak.load()
 				.then(() => {
@@ -43,7 +43,10 @@ Scraper.init(username, password)
 					console.log(Exporter.JSON());
 					creds.listOnExit && Resource.list();
 				})
-				.catch(e => Feedback.error(e))
+				.catch(e => {
+					Feedback.error(e);
+					process.exit(2);
+				})
 
 		} catch(e){ Feedback.error(e); }
 	});

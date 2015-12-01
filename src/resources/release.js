@@ -30,7 +30,7 @@ class Release extends Submission{
 			this.loadReviews,
 			this.loadCollectors,
 			this.loadHistory
-		]);
+		]).then(this::this.loadFinished);
 	}
 	
 	
@@ -52,30 +52,38 @@ class Release extends Submission{
 			let $           = s => document.querySelector(s);
 			let optionText  = s => {
 				let el = "string" === typeof s ? $(s) : s;
-				return el.options[el.selectedIndex].textContent;
+				return !el ? undefined : el.options[el.selectedIndex].textContent;
 			};
-
-
+			
+			
+			/** Manage inheritance */
+			let parentID = $("input[name='parentId']").value;
+			if(parentID){
+				this.parent         = new Release(parentID);
+				this.overrideSongs  = parseInt($("#override_songs").value);
+			}
+			
 			/** Release type */
 			let releaseTypes   = $("#typeId");
 			let releaseType    = releaseTypes.options[releaseTypes.selectedIndex];
 			let multipleBands  = +releaseType.getAttribute("data-multiple-bands");
 			let bandsPerTrack  = +releaseType.getAttribute("data-band-per-track");
 
-			/** Begin ripping out vitals */
-			this.name          = $("#releaseName").value;
-			this.type          = releaseType.textContent;
-			this.date          = this.parseDate(window, "#releaseDateDay", "#releaseDateMonth", "#releaseDateYear");
-			this.catId         = $("#catalogNumber").value;
-			this.limitation    = $("#nbCopies").value;
-			this.cover         = ($(".album_img > #cover") || {}).href;
-			this.description   = $("#versionDescription").value;
+			/** Begin ripping out vitals. Make sure to ignore inherited properties. */
+			this.name          = ($("#releaseName:not(.inheritedField)") || {}).value;
+			this.type          = releaseTypes.classList.contains("inheritedField") ? undefined : releaseType.textContent;
+			this.date          = $("select[name^='releaseDate'].inheritedField")   ? undefined : this.parseDate(window, "#releaseDateDay", "#releaseDateMonth", "#releaseDateYear");
+			this.catId         = ($("#catalogNumber:not(.inheritedField)") || {}).value;
+			this.limitation    = ($("#nbCopies:not(.inheritedField)")      || {}).value;
+			this.cover         = $("#cover.inheritedField") ? undefined : ($(".album_img > #cover") || {}).href;
+			this.description   = ($("#versionDescription:not(.inheritedField)") || {}).value;
+			this.authenticity  = optionText("#authenticityId");
 			this.separate      = $("#separateListing_1").checked;
 			this.locked        = $("#lockUpdates_1").checked;
-			this.notes         = $("textarea[name=notes]").value;
-			this.recordingInfo = $("textarea[name=recordingInfo]").value;
-			this.identifiers   = $("textarea[name=identifiers]").value;
-			this.warning       = $("textarea[name=notesWarning]").value;
+			this.notes         = ($("textarea[name=notes]:not(.inheritedField)")         || {}).value;
+			this.recordingInfo = ($("textarea[name=recordingInfo]:not(.inheritedField)") || {}).value;
+			this.identifiers   = ($("textarea[name=identifiers]:not(.inheritedField)")   || {}).value;
+			this.warning       = ($("textarea[name=notesWarning]:not(.inheritedField)")  || {}).value;
 			
 			/** Release's label */
 			let label          = parseInt($("#labelId").value);
@@ -87,6 +95,7 @@ class Release extends Submission{
 			
 			/** Bands featured on this release */
 			this.for           = [];
+			this.for.toString  = function(){return this.map(i => i.name || ("@"+i)).join("|")};
 			let bandsList      = $(".trackSplitBands").children;
 			for(let i of Array.from(bandsList)){
 				
@@ -101,7 +110,7 @@ class Release extends Submission{
 					this.for.push(band);
 				}
 			}
-
+			
 			
 			/** Components */
 			this.components    = [];
@@ -166,6 +175,23 @@ class Release extends Submission{
 						side:         !hasSides ? null : sideIndices.slice(0, t.sectionRowIndex).filter(o => o).pop()
 					});
 				}
+			}
+			
+			
+			/** Prune undefined properties, probably inherited from a parent release */
+			for(let i in this)
+				if(undefined === this[i]) delete this[i];
+			
+			/** Check for some additional properties to cull if there's a parent detected */
+			if(this.parent){
+				
+				/** Delete identical bands lists */
+				if(this.for.toString() === this.parent.for.toString())
+					delete this.for;
+				
+				/** Hell, may as well trash identical components lists while we're here */
+				if(JSON.stringify(this.parent.components) === JSON.stringify(this.components))
+					delete this.components;
 			}
 			
 			
@@ -259,6 +285,40 @@ class Release extends Submission{
 	
 	
 	/**
+	 * Called when everything else has finished loading.
+	 *
+	 * @return {Promise}
+	 */
+	loadFinished(){
+		
+		/** Don't bother loading reissues if this actually IS a reissue. */
+		if(this.parent) return Promise.resolve();
+		
+		this.log("Loading: Other versions");
+		let url = `http://www.metal-archives.com/release/ajax-versions/current/${this.id}/parent/${this.id}`;
+		return Scraper.getHTML(url).then(window => {
+			this.log("Received: Other versions");
+			let promises = [];
+			
+			let document = window.document;
+			let $$       = s => document.querySelectorAll(s);
+			
+			/** Create a new Release instance for every reissue found */
+			for(let i of Array.from($$("table.display > tbody > tr:not(.priorityReport)"))){
+				let editBtn    = i.querySelector(".ui-icon-pencil").parentNode;
+				let reissue    = new Release(+editBtn.href.match(/\d+$/)[0]);
+				reissue.parent = this;
+				promises.push(reissue.load());
+			}
+			
+			this.log("Done: Other versions");
+			return Promise.all(promises);
+		});
+	}
+	
+	
+	
+	/**
 	 * Return a reference to the instance's parent release.
 	 *
 	 * If the instance lacks a parent, a reference to itself is returned instead.
@@ -332,6 +392,8 @@ class Release extends Submission{
 		let haveLabels          = this.labels && this.labels.length;
 		let haveBands           = this.for && this.for.length !== 0;
 		
+		if(this.parent)         result.parent         = this.parent.id;
+		if(this.overrideSongs)  result.overrideSongs  = true;
 		if(this.name)           result.name           = this.name;
 		if(this.type)           result.type           = this.type;
 		if(this.date)           result.date           = this.date;
