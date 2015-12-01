@@ -1,6 +1,7 @@
 "use strict";
 
 import Scraper     from "../app/scraper.js";
+import Collectors  from "../data-lists/collectors.js";
 import Submission  from "./submission.js";
 import Band        from "./band.js";
 import Label       from "./label.js";
@@ -27,6 +28,7 @@ class Release extends Submission{
 			this.loadMembers,
 			this.loadReports,
 			this.loadReviews,
+			this.loadCollectors,
 			this.loadHistory
 		]);
 	}
@@ -230,6 +232,48 @@ class Release extends Submission{
 			this.log("Done: Reviews");
 			return Promise.resolve();
 		});
+	}
+	
+	
+	
+	/**
+	 * Load who has this release in their collection/trade-list/wishlist.
+	 *
+	 * @return {Promise}
+	 */
+	loadCollectors(){
+		this.log("Loading: Collectors");
+		
+		let collectors = [
+			new Collectors(this, Collectors.OWNERS),
+			new Collectors(this, Collectors.TRADERS),
+			new Collectors(this, Collectors.WANTERS)
+		];
+		
+		return Promise.all(collectors.map(i => i.load())).then(o => {
+			console.log("Done: Collectors");
+			collectors.map(i => i.applyToUsers())
+		});
+	}
+	
+	
+	
+	/**
+	 * Return a reference to the instance's parent release.
+	 *
+	 * If the instance lacks a parent, a reference to itself is returned instead.
+	 *
+	 * @param {Boolean} topMost - Return the top-most ancestor instead of the immediate parent
+	 * @return {Release}
+	 */
+	getParent(topMost){
+		if(!this.parent) return this;
+		if(!topMost)     return this.parent;
+		
+		let parent = this.parent;
+		while(parent.parent)
+			parent = parent.parent;
+		return parent;
 	}
 	
 	

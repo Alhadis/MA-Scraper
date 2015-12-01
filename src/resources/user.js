@@ -30,8 +30,28 @@ let roles = {
 
 
 class User extends Resource{
-
-
+	
+	
+	/**
+	 * Create a new User reference
+	 *
+	 * @param {String}  name     - User's display name, interpreted as a unique ID until details are loaded
+	 * @param {Boolean} autoload - Load the User's profile immediately upon creation
+	 * @constructor
+	 */
+	constructor(id, autoload = false){
+		super(id, autoload);
+		
+		/** Initialise the user's collection lists */
+		this.lists   = {
+			collection: [],
+			trade:      [],
+			wish:       []
+		};
+	}
+	
+	
+	
 	load(){
 		return super.load([
 			this.loadCore
@@ -62,16 +82,6 @@ class User extends Resource{
 				let source   = document.documentElement.innerHTML;
 				this.name    = this.id;
 				this.id      = +source.match(/"http:\/\/www\.metal-archives\.com\/user\/tab-bands\/id\/(\d+)\/?"/i)[1];
-			}
-
-
-			/** Initialise the user's collection lists, if needed */
-			if(!this.lists){
-				this.lists   = {
-					collection: [],
-					trade:      [],
-					wish:       []
-				};
 			}
 
 
@@ -141,6 +151,7 @@ class User extends Resource{
 			this.role        = roles[this.rank];
 		});
 	}
+	
 	
 	
 	
