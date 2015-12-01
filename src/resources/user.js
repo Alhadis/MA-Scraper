@@ -42,8 +42,8 @@ class User extends Resource{
 	constructor(id, autoload = false){
 		super(id, autoload);
 		
-		/** Initialise the user's collection lists */
-		this.lists   = {
+		/** Initialise the user's collection lists if needed */
+		this.lists = this.lists || {
 			collection: [],
 			trade:      [],
 			wish:       []
