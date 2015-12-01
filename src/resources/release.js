@@ -251,7 +251,7 @@ class Release extends Submission{
 		];
 		
 		return Promise.all(collectors.map(i => i.load())).then(o => {
-			console.log("Done: Collectors");
+			this.log("Done: Collectors");
 			collectors.map(i => i.applyToUsers())
 		});
 	}
