@@ -131,7 +131,8 @@ class Band extends Submission{
 			let document    = window.document;
 			let releaseRows = document.querySelectorAll(".discog > tbody > tr");
 			for(let i of Array.from(releaseRows)){
-				let release = new Release(+i.querySelector(".albumMenu").id);
+				let id      = i.querySelector(".ui-icon-pencil").parentNode.href.match(/\/(\d+)$/)[1];
+				let release = new Release(id);
 				promises.push(release.load());
 			}
 			
