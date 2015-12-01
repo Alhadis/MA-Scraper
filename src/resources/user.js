@@ -215,7 +215,35 @@ class User extends Resource{
 		if(this.modNotes)      result.modNotes     = this.modNotes;
 		if(this.role)          result.role         = this.role;
 		if(this.deactivated)   result.deactivated  = true;
-		if(this.lists)         result.lists        = this.lists;
+		
+		
+		/** Tidy up the user's collection lists */
+		let collection         = this.lists.collection;
+		let tradeList          = this.lists.trade;
+		let wishList           = this.lists.wish;
+		
+		/** Only bother storing collection-related data if there's anything to store */
+		if(collection.length || tradeList.length || wishList.length){
+			let lists          = {};
+			let tidy           = i => {
+				
+				/** Delete empty notes properties */
+				if(!i.notes) delete i.notes;
+				
+				/** It's safe to store the release as just its ID if there's no other relevant properties to hold */
+				if(i.id && 1 === Object.keys(i).length)
+					return i.id;
+				
+				return i;
+			};
+			
+			if(collection.length) lists.collection = collection.map(tidy);
+			if(tradeList.length)  lists.trade      = tradeList.map(tidy);
+			if(wishList.length)   lists.wish       = wishList.map(tidy);
+			result.lists = lists;
+		}
+		
+		
 		return result;
 	}
 	
