@@ -2,6 +2,7 @@
 
 import Scraper     from "../app/scraper.js";
 import Submission  from "./submission.js";
+import Release     from "./release.js";
 import Label       from "./label.js";
 import Member      from "./member.js";
 import User        from "./user.js";
@@ -25,6 +26,7 @@ class Band extends Submission{
 			this.loadPeripherals,
 			this.loadMembers,
 			this.loadReports,
+			this.loadDiscography,
 			this.loadHistory,
 			this.loadLinks,
 			this.loadRecommendations
@@ -107,6 +109,33 @@ class Band extends Submission{
 			this.parseAuditTrail(window);
 			
 			this.log("Done: Peripherals");
+			return Promise.all(promises);
+		});
+	}
+	
+	
+	
+	/**
+	 * Load the band's discography.
+	 *
+	 * @return {Promise}
+	 */
+	loadDiscography(){
+		this.log("Loading: Discography");
+		let url = `http://www.metal-archives.com/band/discography/id/${this.id}/tab/all`;
+		
+		return Scraper.getHTML(url).then(window => {
+			this.log("Received: Discography");
+			let promises = [];
+			
+			let document    = window.document;
+			let releaseRows = document.querySelectorAll(".discog > tbody > tr");
+			for(let i of Array.from(releaseRows)){
+				let release = new Release(+i.querySelector(".albumMenu").id);
+				promises.push(release.load());
+			}
+			
+			this.log("Done: Discography");
 			return Promise.all(promises);
 		});
 	}

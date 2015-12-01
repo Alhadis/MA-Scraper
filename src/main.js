@@ -35,7 +35,7 @@ Scraper.init(username, password)
 		}
 		
 		try{
-			let Alturiak = new Release(213978);
+			let Alturiak = new Band(3540334729);
 
 			Alturiak.load()
 				.then(() => {
