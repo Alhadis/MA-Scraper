@@ -2,6 +2,7 @@
 
 import Scraper     from "../app/scraper.js";
 import Submission  from "./submission.js";
+import File        from "./file.js";
 
 
 class Label extends Submission{
@@ -58,7 +59,7 @@ class Label extends Submission{
 			this.url             = $("#website").value;
 			this.onlineShopping  = $("#onlineShopping_1").checked;
 			this.founded         = this.parseDate(window, "#foundingDateDay", "#foundingDateMonth", "#foundingDateYear");
-			this.logo            = ($("#label_logo") || {}).href;
+			this.logo            = new File(($("#label_logo") || {}).href);
 			this.address         = $('textarea[name="address"]').value;
 			this.phone           = $("#phone").value;
 			this.email           = $("#email").value;

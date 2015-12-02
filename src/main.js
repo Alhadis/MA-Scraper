@@ -12,6 +12,7 @@ import Release   from "./resources/release.js";
 import Resource  from "./resources/resource.js";
 import Member    from "./resources/member.js";
 import Report    from "./resources/report.js";
+import File      from "./resources/file.js";
 
 
 /** Runtime configuration */
@@ -39,14 +40,22 @@ Scraper.init(username, password)
 
 			Alturiak.load()
 				.then(() => {
-					console.warn("Done!");
-					console.log(Exporter.JSON());
-					creds.listOnExit && Resource.list();
+					console.warn("\nFinished loading data. Loading images.");
+					
+					File.loadAll().then(() => {
+						console.warn("Done!");
+						console.log(Exporter.JSON());
+						creds.listOnExit && Resource.list();
+					}).catch(e => {
+						Feedback.error(e);
+						process.exit(1);
+					})
+					
 				})
 				.catch(e => {
 					Feedback.error(e);
 					process.exit(2);
-				})
+				});
 
 		} catch(e){ Feedback.error(e); }
 	});

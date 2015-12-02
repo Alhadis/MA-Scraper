@@ -4,6 +4,7 @@ import Scraper     from "../app/scraper.js";
 import Submission  from "./submission.js";
 import Band        from "./band.js";
 import Member      from "./member.js";
+import File        from "./file.js";
 
 
 class Artist extends Submission{
@@ -55,7 +56,7 @@ class Artist extends Submission{
 			this.country  = $("#country").value;
 			this.location = $("#location").value;
 			this.gender   = $("input[name='gender']:checked").value;
-			this.photo    = ($("#artist") || {}).href;
+			this.photo    = new File(($("#artist") || {}).href);
 			this.bio      = $("textarea[name='biography']").value;
 			this.notes    = $("textarea[name='trivia']").value;
 			this.warning  = $("textarea[name='notesWarning']").value;

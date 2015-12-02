@@ -7,6 +7,7 @@ import Label       from "./label.js";
 import Member      from "./member.js";
 import User        from "./user.js";
 import Vote        from "./vote.js";
+import File        from "./file.js";
 
 
 class Band extends Submission{
@@ -36,7 +37,7 @@ class Band extends Submission{
 
 
 	/**
-	 * Loads the majority of the band's details.
+	 * Load the majority of the band's details.
 	 *
 	 * @return {Promise}
 	 */
@@ -66,8 +67,8 @@ class Band extends Submission{
 			this.formed     = $("#yearCreation").value;
 			this.activity   = this.getActivityPeriods(window);
 			this.unsigned   = $("#indieLabel_1").checked;
-			this.logo       = ($(".band_name_img > a#logo") || {}).href;
-			this.photo      = ($(".band_img > #photo")      || {}).href;
+			this.logo       = new File(($(".band_name_img > a#logo") || {}).href);
+			this.photo      = new File(($(".band_img > #photo")      || {}).href);
 			this.notes      = $("textarea[name=notes]").value;
 			this.evidence   = $("textarea[name=notesPending]").value;
 			this.warning    = $("textarea[name=notesWarning]").value;

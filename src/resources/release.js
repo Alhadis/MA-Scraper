@@ -8,6 +8,7 @@ import Label       from "./label.js";
 import Member      from "./member.js";
 import Track       from "./track.js";
 import Review      from "./review.js";
+import File        from "./file.js";
 
 
 class Release extends Submission{
@@ -75,7 +76,7 @@ class Release extends Submission{
 			this.date          = $("select[name^='releaseDate'].inheritedField")   ? undefined : this.parseDate(window, "#releaseDateDay", "#releaseDateMonth", "#releaseDateYear");
 			this.catId         = ($("#catalogNumber:not(.inheritedField)") || {}).value;
 			this.limitation    = ($("#nbCopies:not(.inheritedField)")      || {}).value;
-			this.cover         = $("#cover.inheritedField") ? undefined : ($(".album_img > #cover") || {}).href;
+			this.cover         = $("#cover.inheritedField") ? undefined : new File(($(".album_img > #cover") || {}).href);
 			this.description   = ($("#versionDescription:not(.inheritedField)") || {}).value;
 			this.authenticity  = optionText("#authenticityId");
 			this.separate      = $("#separateListing_1").checked;
