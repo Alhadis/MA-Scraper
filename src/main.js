@@ -13,13 +13,83 @@ import Resource  from "./resources/resource.js";
 import Member    from "./resources/member.js";
 import Report    from "./resources/report.js";
 import File      from "./resources/file.js";
+import Edit      from "./resources/edit.js";
+import Label     from "./resources/label.js";
+import Link      from "./resources/link.js";
+import Review    from "./resources/review.js";
+import Role      from "./resources/role.js";
+import Track     from "./resources/track.js";
+import User      from "./resources/user.js";
+import Vote      from "./resources/vote.js";
 
 
-/** Runtime configuration */
-let creds      = JSON.parse(fs.readFileSync(".devrc.json"));
-let username   = creds.username;
-let password   = creds.password;
-let cookie     = creds.cookie;
+/** Parse CLI arguments */
+let {options, argv} = getOptions(process.argv.slice(2), {
+	"-h, --help":          "",
+	"-p, --preserve-urls": "",
+	"-i, --images":        "<mode=[a-z]+>",
+	"-l, --log-level":     "<n=\\d+>",
+	"-u, --user-config":   "<path>"
+});
+
+
+/** Display help message if requested */
+if(options.help){
+	Feedback.help();
+	process.exit(0);
+}
+
+
+
+/** Normalise option values, deferring to defaults when omitted */
+let preserveURLs = options.preserveURLs;
+let logLevel     = options.logLevel   || 4;
+let imageMode    = options.images     || "download";
+let userConfig   = options.userConfig || ".devrc.json";
+
+
+let resourceType = argv[0];
+let resourceID   = argv[1];
+
+/** Check the user provided the necessary parameters */
+if(!resourceType){
+	Feedback.error("No resource type specified");
+	process.exit(2);
+}
+
+if(!resourceID){
+	Feedback.error("No resource ID specified");
+	process.exit(3);
+}
+
+
+/** Exportable resource types */
+let validTypes    = {Artist, Band, Edit, Label, Link, Member, Release, Report, Review, Role, Track, User, Vote};
+
+/** Assume sentence-case for the specified resource-type; saves us bothering about case-sensitivity */
+let resourceClass = resourceType[0].toUpperCase() + resourceType.toLowerCase().substr(1);
+
+/** An invalid resource type was specified */
+if(!(resourceClass = validTypes[resourceClass])){
+	let examples  = [""].concat(Object.keys(validTypes)).join("\n  - ").toLowerCase();
+	let message   = `"${resourceType}" is not an exportable resource. Use one of the following: ${examples}\n`;
+	Feedback.error(message);
+	process.exit(4);
+}
+
+
+/** Load user credentials */
+let creds, username, password, cookie;
+try{
+	creds        = JSON.parse(fs.readFileSync(userConfig));
+	username     = creds.username;
+	password     = creds.password;
+	cookie       = creds.cookie;
+} catch(error){
+	Feedback.error("Unable to load configuration file: " + userConfig);
+	process.exit(5);
+}
+
 
 
 /** Login and get rockin' */
@@ -36,9 +106,7 @@ Scraper.init(username, password)
 		}
 		
 		try{
-			let Alturiak = new Band(3540334729);
-
-			Alturiak.load()
+			new resourceClass(resourceID).load()
 				.then(() => {
 					console.warn("\nFinished loading data. Loading images.");
 					

@@ -10,7 +10,8 @@
 	"dependencies": {
 		"jsdom": "*",
 		"node-fetch": "*",
-		"tough-cookie": "*"
+		"tough-cookie": "*",
+		"get-options": "*"
 	},
 	"devDependencies": {
 		"babel-core": ">=6.1.2",

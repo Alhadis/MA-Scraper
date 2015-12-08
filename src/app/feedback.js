@@ -18,7 +18,7 @@ const ICONS = {
 class Feedback{
 
 	/**
-	 * Displays a line of feedback describing a resource's loading activity.
+	 * Display a line of feedback describing a resource's loading activity.
 	 *
 	 * @param {Resource} obj  - Resource in question
 	 * @param {String}   text - Short description of what's just happened
@@ -36,7 +36,7 @@ class Feedback{
 	
 
 	/**
-	 * Sends a formatted/coloured error message to STDERR.
+	 * Send a formatted/coloured error message to STDERR.
 	 *
 	 * @param {String|Error} message
 	 * @static
@@ -62,7 +62,7 @@ class Feedback{
 	
 	
 	/**
-	 * Truncates the string-based representation of a value if it exceeds a given character limit.
+	 * Truncate the string-based representation of a value if it exceeds a given character limit.
 	 *
 	 * @param {Mixed} value - The variable to truncate; typecast to a string beforehand
 	 * @param {Number} limit - Maximum number of characters
@@ -73,6 +73,33 @@ class Feedback{
 		if(output.length > limit)
 			output = output.substr(0, limit) + marker;
 		return output;
+	}
+	
+	
+	/**
+	 * Display the program's help message, sending it to STDOUT.
+	 *
+	 * @return {String}
+	 */
+	static help(){
+		let name = path.basename(process.argv[1]);
+		let help = `
+			Usage: ${name} [options] <resource-type> <id>
+
+			Export a resource from Metal Archives with the given type and id.
+
+			Options:
+
+			  -h, --help            Display this help message and exit
+			  -p, --preserve-urls   Don't modify URLs when downloading files
+			  -i, --images <mode>   Whether to embed or download relevant image files
+			  -l, --log-level <n>   Degree of logging feedback
+
+			Run \`man ma-scraper' for full documentation.
+		`.replace(/\t+/g, "    ");
+		
+		console.log(help);
+		return help;
 	}
 }
 
