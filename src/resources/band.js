@@ -73,7 +73,6 @@ class Band extends Submission{
 			this.evidence   = $("textarea[name=notesPending]").value;
 			this.warning    = $("textarea[name=notesWarning]").value;
 			this.modNotes   = $("textarea[name=notesModeration]").value;
-			this.rejection  = "";
 			this.digital    = $("#acceptedAsDigital_1").checked;
 			this.locked     = $("#lockedDisco_1").checked;
 			
@@ -123,6 +122,16 @@ class Band extends Submission{
 				else if(/^This band is currently in the submitter\\'s drafts/.test(message))  this.modStatus = "draft";
 				else if(match = message.match(/^This band has been (deleted|rejected)/))      this.modStatus = match[1];
 				else console.warn(`Unusual input for rejection status:\n${input}`);
+				
+				
+				/** Look for any deletion/rejection reasons, too */
+				let reason;
+				if(this.modStatus      === "deleted")  reason = input.match(/reason given: "(.*?)"\) and will probably be purged soon/mi)[1];
+				else if(this.modStatus === "rejected") reason = input.match(/the following reason:<p>"<em>(.*?)"<\/em><\/p>/mi)[1];
+				
+				/** Did we find one? */
+				if(reason)
+					this.rejection = reason.replace(/\\{2}/g, "\\").replace(/\\'/g, "'").replace(/<br\s*\/?>/gi, "\n");
 			}
 			
 			
