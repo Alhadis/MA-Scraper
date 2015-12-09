@@ -17,5 +17,8 @@ global.CookieJar    = require("tough-cookie");
 global.getOptions   = require("get-options");
 global.mkdirp       = require("mkdirp");
 
+/** Resolve current working directory */
+process.chdir(path.dirname(fs.realpathSync(process.argv[1])));
+
 /** Start the program */
 require("./src/main.js");
