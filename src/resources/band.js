@@ -73,7 +73,6 @@ class Band extends Submission{
 			this.evidence   = $("textarea[name=notesPending]").value;
 			this.warning    = $("textarea[name=notesWarning]").value;
 			this.modNotes   = $("textarea[name=notesModeration]").value;
-			this.modStatus  = "accepted";
 			this.rejection  = "";
 			this.digital    = $("#acceptedAsDigital_1").checked;
 			this.locked     = $("#lockedDisco_1").checked;
@@ -108,6 +107,25 @@ class Band extends Submission{
 
 			/** Get the band's creation/modification details */
 			this.parseAuditTrail(window);
+			
+			
+			/** Ascertain the band's moderation status */
+			this.modStatus  = "approved";
+			let html        = window.document.documentElement.innerHTML;
+			let match       = html.match(/\n\t{5}var message = '(.+?)\n\t{3}outputErrors\(\{ status: message\}, '#message'\);/m);
+			
+			/** Check if there's an approval-status message on the page */
+			if(match){
+				let message = match[1];
+				let input   = match.input;
+				
+				if(/^This band is still pending approval/.test(message))                      this.modStatus = "pending";
+				else if(/^This band is currently in the submitter\\'s drafts/.test(message))  this.modStatus = "draft";
+				else if(match = message.match(/^This band has been (deleted|rejected)/))      this.modStatus = match[1];
+				else console.warn(`Unusual input for rejection status:\n${input}`);
+			}
+			
+			
 			
 			this.log("Done: Peripherals");
 			return Promise.all(promises);
