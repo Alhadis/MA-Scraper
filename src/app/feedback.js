@@ -29,7 +29,7 @@ class Feedback{
 		let icon  = ICONS[type];
 
 		type      = this.pad(type, 7);
-		id        = this.pad(this.truncate(id, 16), 16);
+		id        = this.pad(this.truncate(id, 19), 20);
 
 		console.warn(`${icon || " "}  ${type}  ${id}  ${text}`);
 	}
