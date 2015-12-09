@@ -15,6 +15,7 @@ global.JSDom        = require("jsdom");
 global.fetch        = require("node-fetch");
 global.CookieJar    = require("tough-cookie");
 global.getOptions   = require("get-options");
+global.mkdirp       = require("mkdirp");
 
 /** Start the program */
 require("./src/main.js");

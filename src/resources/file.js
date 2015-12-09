@@ -42,6 +42,8 @@ class File extends Resource{
 			
 			HTTP.get(this.id, result => {
 				this.log("Reading: File data");
+				this.contentType = result.headers["content-type"];
+				
 				result
 					.on("data", chunk => chunks.push(chunk))
 					.on("end",  () => {
@@ -108,15 +110,37 @@ class File extends Resource{
 	
 	
 	/**
+	 * Return either the file's URL or its base64-encoded contents if File.embedData is true
+	 *
+	 * If the instance's data hasn't been loaded yet, the URL is always returned irrespective
+	 * of the class's .embedData property.
+	 *
+	 * @return {String}
+	 */
+	toJSON(property){
+		if(this.constructor.embedData && this.data)
+			return `data:${this.contentType};base64,` + this.toBase64();
+		else return super.toJSON(property);
+	}
+	
+	
+	
+	/**
 	 * Helper method to load the binary content of every File instance that's been created.
 	 *
+	 * @param {String} saveTo - If specified, will save the file's data to the given directory
 	 * @return {Promise}
 	 */
-	static loadAll(){
+	static loadAll(saveTo){
 		let promises = [];
 		let files    = File.getAll();
 		for(let i in files)
-			files[i].data || i && promises.push(files[i].load());
+			files[i].data || i && promises.push(files[i].load().then(() => {
+				let f = files[i];
+				if(saveTo && f.data)
+					return f.save(saveTo.replace(/\/*$/, "/") + f.filename);
+				return Promise.resolve();
+			}));
 		
 		return Promise.all(promises);
 	}

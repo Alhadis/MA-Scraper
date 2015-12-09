@@ -11,7 +11,8 @@
 		"jsdom": "*",
 		"node-fetch": "*",
 		"tough-cookie": "*",
-		"get-options": "*"
+		"get-options": "*",
+		"mkdirp": "*"
 	},
 	"devDependencies": {
 		"babel-core": ">=6.1.2",

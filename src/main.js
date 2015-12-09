@@ -26,8 +26,8 @@ import Vote      from "./resources/vote.js";
 /** Parse CLI arguments */
 let {options, argv} = getOptions(process.argv.slice(2), {
 	"-h, --help":          "",
-	"-p, --preserve-urls": "",
-	"-i, --images":        "<mode=[a-z]+>",
+	"-e, --embed-images":  "",
+	"-s, --save-images":   "<path>",
 	"-l, --log-level":     "<n=\\d+>",
 	"-u, --user-config":   "<path>"
 });
@@ -42,9 +42,9 @@ if(options.help){
 
 
 /** Normalise option values, deferring to defaults when omitted */
-let preserveURLs = options.preserveURLs;
+let embedImages  = options.embedImages;
+let saveImages   = options.saveImages;
 let logLevel     = options.logLevel   || 4;
-let imageMode    = options.images     || "download";
 let userConfig   = options.userConfig || ".devrc.json";
 
 
@@ -108,17 +108,28 @@ Scraper.init(username, password)
 		try{
 			new resourceClass(resourceID).load()
 				.then(() => {
-					console.warn("\nFinished loading data. Loading images.");
-					
-					File.loadAll().then(() => {
+					let done = () => {
 						console.warn("Done!");
 						console.log(Exporter.JSON());
-						creds.listOnExit && Resource.list();
-					}).catch(e => {
-						Feedback.error(e);
-						process.exit(1);
-					})
+					};
 					
+					/** Decide if we need to load the images, too */
+					if(embedImages || saveImages){
+						console.warn("\nFinished loading data. Loading images.");
+						
+						/** If given a directory to save images to, make sure it exists */
+						if(saveImages)
+							mkdirp.sync(saveImages);
+						
+						File.embedData = embedImages;
+						File.loadAll(saveImages).then(done).catch(e => {
+							Feedback.error(e);
+							process.exit(1);
+						});
+					}
+					
+					/** Nope, no more loading to do. We're done here. */
+					else done();
 				})
 				.catch(e => {
 					Feedback.error(e);
