@@ -5,6 +5,7 @@
 	"private": true,
 	"license": "UNLICENSED",
 	"repository": "Alhadis/MA-Scraper",
+	"directories": {"lib": "./src", "man": "./man"},
 	"engines": { "node": ">=5.0.0" },
 	"preferGlobal": true,
 	"dependencies": {

@@ -1,0 +1,37 @@
+.TH MA-EXPORT 2 "2015-12-10" "MA Scraper v1.0" "MA Scraper"
+.SH NOTICE
+In order to run this program, you must have an account with moderator\-level access to the site's data.
+Only staff members will be able to successfully export data.
+.SH SETUP
+Before running
+.B ma\-export
+for the first time, make sure the following file exists in the program's root directory:
+.PP
+.RS
+.B .devrc.json
+.RE
+.PP
+If it doesn't, run the following commands, filling out the obvious placeholders:
+.PP
+.nf
+.RS
+username="\fIYOUR_USERNAME\fP"
+password="\fIYOUR_PASSWORD\fP"
+printf '{"username":"%s","password":"%s"}'$'\\n' $username $password > .devrc.json
+.RE
+.fi
+.PP
+By default, the program loads login details from a file named `.devrc.json', in the directory it's installed to.
+.SH SECURITY
+Be aware these details are stored in a plain\-text format, and are accessible to anybody with access to the program's directory.
+.PP
+An alternate configuration file can be specified on command\-line by using the \fB\-\-user-config\fP option:
+.PP
+.RS
+\fB$ ma\-export\fP band 1 \-\-user\-config=~/.ma\-user\-details.json
+.RE
+.SH AUTOMATION
+A subcommand to facilitate the generation of user\-credential files may (or may not) be developed in future. Most likely not.
+.SH SEE ALSO
+.BR ma\-export (1)
+for the program's main documentation.

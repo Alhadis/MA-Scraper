@@ -1,0 +1,89 @@
+.TH MA-EXPORT 1 "2015-12-10" "MA Scraper v1.0" "MA Scraper"
+.SH NAME
+ma\-export \- Export a resource from Metal Archives in JSON format
+.SH SYNOPSIS
+ma\-export [\fIOPTIONS\fP] <\fITYPE\fP> <\fIID\fP>
+.SH DESCRIPTION
+Export a resource of the given \fITYPE\fP and \fIID\fP from Metal Archives.
+The result is sent to standard output in JSON format.
+.TP
+Acceptable resource types are:
+.B band, artist, label, release, report, review
+.P
+The \fIID\fP is a number which uniquely identifies the resource in the site's database.
+.P
+.B NOTE:
+You must have an account with moderator\-level access in order to run this program.
+See
+.BR ma\-export (2)
+for details.
+.SH OPTIONS
+.TP
+.B \-h, \-\-help
+Display a brief usage message and exit.
+.TP
+.B \-e, \-\-embed\-images
+Embed images directly into generated JSON as base64\-encoded data URIs.
+.TP
+.B \-s \fIPATH\fP, \-\-save\-images=\fIPATH\fP
+Save images to the given directory.
+If this option is omitted, no images are saved to the filesystem.
+.TP
+.B \-l \fINUM\fP, \-\-log\-level=\fINUM\fP
+Extent of logging feedback.
+Currently ignored.
+.TP
+.B \-u \fIFILE\fP, \-\-user\-config=\fIFILE\fP
+Path of user\-login \fIFILE\fP, relative to program.
+This is a JSON file containing login credentials.
+.SH EXAMPLES
+Export a band from the database:
+.PP
+.nf
+.RS
+\fBma\-export\fP  band 72 > Slayer.json
+\fBma\-export\fP  band 6731 > Embalming\-Theatre.json
+.RE
+.fi
+.PP
+Export a band with all images saved to a nearby directory:
+.PP
+.nf
+.RS
+\fBma\-export\fP  \-\-save\-images ./pictures band 3540334729 > Alturiak.json
+\fBma\-export\fP  \-\-save\-images ./bwooaahh band 612 > 'Sunn O))).json'
+.RE
+.fi
+.PP
+Export a label's page with their logo embedded inside the JSON file:
+.PP
+.nf
+.RS
+\fBma\-export\fP  label 24 \-\-embed\-images > Season\-of\-Mist.json
+\fBma\-export\fP  label 34820 \-\-embed\-images > "Old Axe Cult Records.json"
+.RE
+.fi
+.SH EXIT STATUS
+The program emits a different error code depending on circumstances:
+.IP 1
+Login details are incorrect or the account lacks sufficient access.
+.IP 2
+No resource type was specified.
+.IP 3
+No resource ID was specified.
+.IP 4
+An invalid resource type was specified.
+.IP 5
+The configuration file could not be loaded or parsed.
+.IP 6
+An error occurred while exporting data. This may be indicative of server downtime, or a change in the site's document structure.
+.IP 7
+An error occurred while loading or saving images.
+.SH SEE ALSO
+.BR ma\-export (2)
+for login assistance.
+.SH AUTHORS
+Alhadis <\fIalhadis@metal\-archives.com\fP>
+.PP
+This program is not intended for general public usage.
+Suggestions or feedback are neither expected or warranted.

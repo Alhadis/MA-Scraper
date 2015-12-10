@@ -90,10 +90,11 @@ class Feedback{
 
 			Options:
 
-			  -h, --help            Display this help message and exit
-			  -p, --preserve-urls   Don't modify URLs when downloading files
-			  -i, --images <mode>   Whether to embed or download relevant image files
-			  -l, --log-level <n>   Degree of logging feedback
+			  -h, --help                 Display this help message and exit
+			  -e, --embed-images         Embed images directly into generated JSON
+			  -s, --save-images <path>   Directory to save images to
+			  -l, --log-level   <level>  Extent of logging feedback
+			  -u, --user-config <path>   Path of user-login file, relative to program
 
 			Run \`man ma-scraper' for full documentation.
 		`.replace(/\t+/g, "    ");
