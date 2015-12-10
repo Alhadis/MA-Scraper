@@ -218,7 +218,7 @@ class Release extends Submission{
 			let promises    = [];
 			
 			/** Get the release's creation/modification details */
-			this.parseAuditTrail(window);
+			promises.push(this.parseAuditTrail(window));
 			
 			return Promise.all(promises);
 		});

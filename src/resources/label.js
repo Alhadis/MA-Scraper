@@ -92,7 +92,7 @@ class Label extends Submission{
 			let promises = [];
 			
 			/** Get the label's creation/modification details */
-			this.parseAuditTrail(window);
+			promises.push(this.parseAuditTrail(window));
 			
 			this.log("Done: Peripherals");
 			return Promise.all(promises);

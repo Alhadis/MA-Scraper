@@ -105,7 +105,7 @@ class Band extends Submission{
 			let promises = [];
 
 			/** Get the band's creation/modification details */
-			this.parseAuditTrail(window);
+			promises.push(this.parseAuditTrail(window));
 			
 			
 			/** Ascertain the band's moderation status */

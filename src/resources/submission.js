@@ -25,8 +25,10 @@ class Submission extends Resource{
 	 * Pull creation/modification times from the page's footer.
 	 *
 	 * @param {Window} window
+	 * @return {Promise}
 	 */
 	parseAuditTrail(window){
+		let promises    = [];
 		let trail       = window.document.getElementById("auditTrail");
 		let rows        = trail.querySelectorAll("tr");
 
@@ -40,7 +42,10 @@ class Submission extends Resource{
 		on = rows[1].children[0].textContent.replace(rTimeStamp, "");
 		if(by || on){
 			info = {};
-			if(by) info.by = new User(by);
+			if(by){
+				info.by = new User(by);
+				promises.push(info.by.load());
+			}
 			if(on) info.on = on;
 			this.added     = info;
 		}
@@ -51,7 +56,10 @@ class Submission extends Resource{
 		on = rows[1].children[1].textContent.replace(rTimeStamp, "");
 		if(by || on){
 			info = {};
-			if(by) info.by  = new User(by);
+			if(by){
+				info.by  = new User(by);
+				promises.push(info.by.load());
+			}
 			if(on) info.on  = on;
 			this.modified   = info;
 		}
@@ -59,6 +67,8 @@ class Submission extends Resource{
 
 		/** Check if there're any reports */
 		this.haveReports = !!trail.querySelector('a[href*="/report/by-object/"]');
+		
+		return Promise.all(promises);
 	}
 	
 	
