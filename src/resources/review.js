@@ -28,7 +28,7 @@ class Review extends Resource{
 		/** Pull the author's name, date, and other publication-related junk */
 		let metadata = heading.nextElementSibling;
 		let username = metadata.querySelector("a.profileMenu");
-		let date     = username.nextSibling.data.match(/^\s*,\s*(.*?)(?:\s*~)?\s*$/)[1].replace(/(th|st|rd),/, "");
+		let date     = username.nextSibling.data.match(/^\s*,\s*(.*?)(?:\s*~)?\s*$/)[1].replace(/(th|st|nd|rd),/, "");
 		this.added   = {
 			by:    new User(username.textContent.trim()),
 			on:    new Date(date + " GMT").toISOString().replace(/[TZ]/g, " ").trim()
