@@ -124,7 +124,7 @@ Scraper.init(username, password)
 						File.embedData = embedImages;
 						File.loadAll(saveImages).then(done).catch(e => {
 							Feedback.error(e);
-							process.exit(1);
+							process.exit(7);
 						});
 					}
 					
@@ -133,7 +133,7 @@ Scraper.init(username, password)
 				})
 				.catch(e => {
 					Feedback.error(e);
-					process.exit(2);
+					process.exit(6);
 				});
 
 		} catch(e){ Feedback.error(e); }
