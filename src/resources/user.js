@@ -143,6 +143,11 @@ class User extends Resource{
 			this.age         = info["Age"];
 			this.country     = info["Country"];
 			this.url         = info["Homepage"];
+			this.icq         = info["ICQ"];
+			this.aim         = info["AIM"];
+			this.yahoo       = info["Yahoo! ID"];
+			this.msn         = info["MSN"];
+			this.gtalk       = info["Gtalk"];
 			this.favGenres   = info["Favourite metal genre(s)"];
 			this.comments    = info["Comments"];
 			this.registered  = info["Registration date"];
@@ -208,6 +213,11 @@ class User extends Resource{
 		if(this.age)           result.age          = this.age;
 		if(this.country)       result.country      = this.country;
 		if(this.url)           result.url          = this.url;
+		if(this.icq)           result.icq          = this.icq;
+		if(this.aim)           result.aim          = this.aim;
+		if(this.yahoo)         result.yahoo        = this.yahoo;
+		if(this.msn)           result.msn          = this.msn;
+		if(this.gtalk)         result.gtalk        = this.gtalk;
 		if(this.favGenres)     result.favGenres    = this.favGenres;
 		if(this.comments)      result.comments     = this.comments;
 		if(this.registered)    result.registered   = this.registered;
