@@ -76,7 +76,7 @@ class Edit extends Resource{
 		if(this.ip)      result.ip       = this.ip;
 		if(this.note)    result.note     = this.note;
 		if(haveDetails)  result.details  = this.details;
-		if(this.for)     result.for      = this.for;
+		if(this.for)     result.for      = [...this.for];
 		
 		return result;
 	}
