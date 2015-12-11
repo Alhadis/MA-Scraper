@@ -1,6 +1,7 @@
 "use strict";
 
 import Resource from "./resource.js";
+import Release  from "./release.js";
 import User     from "./user.js";
 
 
@@ -42,6 +43,13 @@ class Review extends Resource{
 		/** Save the submitter's IP address, if possible */
 		let ipLink   = metadata.querySelector("a[href*='/tools/ip-cross-ref']");
 		ipLink && (this.added.ip = ipLink.textContent);
+		
+		
+		/** Store which release version the review was written for, if any */
+		let match    = /Written based on this version:/;
+		let written  = Array.from(metadata.childNodes).find(e => 3 === e.nodeType && match.test(e.data));
+		if(written)
+			this.version = new Release(written.nextSibling.href.match(/\d+$/)[0]);
 		
 		
 		/** Store the name of the mod who approved the review, if available */
