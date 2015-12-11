@@ -188,7 +188,7 @@ class Release extends Submission{
 			if(this.parent){
 				
 				/** Delete identical bands lists */
-				if(this.for.toString() === this.parent.for.toString())
+				if(this.parent.for && this.for.toString() === this.parent.for.toString())
 					delete this.for;
 				
 				/** Hell, may as well trash identical components lists while we're here */
