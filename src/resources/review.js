@@ -23,7 +23,7 @@ class Review extends Resource{
 		let info     = heading.textContent.match(/^\s*(.*?)(?: - )(\d+)%\s*$/);
 		this.title   = info[1];
 		this.rating  = info[2];
-		this.for     = release;
+		this.for     = this.for || release.getParent(true);
 		
 		
 		/** Pull the author's name, date, and other publication-related junk */
