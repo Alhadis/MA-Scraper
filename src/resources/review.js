@@ -52,6 +52,17 @@ class Review extends Resource{
 		/** Now save the actual review body */
 		this.body    = el.querySelector("#reviewText_" + this.id).innerHTML.replace(/<br(?:\s*\/)?>/g, "");
 	}
+	
+	
+	
+	/**
+	 * Load the ID of the mod who approved this review.
+	 *
+	 * @return {Promise}
+	 */
+	load(){
+		return this.approver ? this.approver.load() : Promise.resolve();
+	}
 }
 
 

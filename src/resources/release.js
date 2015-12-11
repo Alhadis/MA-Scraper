@@ -252,13 +252,14 @@ class Release extends Submission{
 		
 		return Scraper.getHTML(url).then(window => {
 			this.log("Received: Reviews");
+			let promises = [];
 			let reviews  = window.document.querySelectorAll(".reviewBox");
 			
 			for(let i of Array.from(reviews))
-				new Review(i, this);
+				promises.push(new Review(i, this).load());
 			
 			this.log("Done: Reviews");
-			return Promise.resolve();
+			return Promise.all(promises);
 		});
 	}
 	
