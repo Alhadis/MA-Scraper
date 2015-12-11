@@ -131,6 +131,7 @@ class Submission extends Resource{
 			
 			for(let i of result.data){
 				let report    = new Report(+i[0].match(/href='[^']*?(\d+)'/i)[1]);
+				report.for    = this;
 				report.type   = i[1];
 				report.status = Report.statusByName(i[2]);
 				
