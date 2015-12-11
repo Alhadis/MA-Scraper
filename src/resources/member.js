@@ -39,7 +39,7 @@ class Member extends Resource{
 	 * @return {Promise}
 	 */
 	load(chunks){
-		this.roles = this.roles || [];
+		this.roles = this.roles || {};
 		
 		/** We were already given the data to work off, no need to fetch anything. */
 		if(chunks)
@@ -122,8 +122,10 @@ class Member extends Resource{
 		
 		/** Now start collecting the roles */
 		let roleRows = roles.querySelectorAll("tr[id^='role_']");
-		for(let row of roleRows)
-			this.roles.push(new Role(row));
+		for(let row of roleRows){
+			let role = new Role(row);
+			this.roles[role.id] = role;
+		}
 
 
 		/** Load the artist and return the resulting Promise */
