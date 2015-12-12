@@ -189,26 +189,29 @@ class Submission extends Resource{
 			let document     = window.document;
 			let $            = s => document.querySelector(s);
 			let $$           = s => document.querySelectorAll(s);
-
-			/** Get a list of every category we have links for */
-			let categoryList = $$("#band_links > ul a");
-			for(let i of categoryList){
-				let type     = i.textContent;
+			
+			/** Make sure we actually have links */
+			if(!$("#noLinks")){
+				let rows     = $$("#linksTablemain > tbody > tr");
+				let type     = "Official";
 				
-				/** Fetch the links for this category */
-				let block    = $("#" + i.href.match(/#(.+)$/)[1]);
-				let table    = block.querySelector("table[id^='linksTable']");
-				
-				for(let r of Array.from(table.rows)){
-					let id   = +r.cells[0].innerHTML.match(/loadLinkForm\((\d+)\)/)[1];
-					let a    = $("#link"+id);
-					new Link({
-						id,
-						url:   a.href,
-						name:  a.textContent,
-						type:  type,
-						for:   this
-					});
+				for(let r of Array.from(rows)){
+					
+					/** This is the beginning of a new link category */
+					if(/^header_/.test(r.id))
+						type = r.textContent.trim();
+					
+					else{
+						let id   = +r.cells[0].innerHTML.match(/loadLinkForm\((\d+)\)/)[1];
+						let a    = $("#link"+id);
+						new Link({
+							id,
+							url:   a.href,
+							name:  a.textContent,
+							type:  type,
+							for:   this
+						});
+					}
 				}
 			}
 			
