@@ -160,7 +160,7 @@ class Release extends Submission{
 				this.tracks      = [];
 				for(let t of i.querySelectorAll(".track")){
 					let id       = t.id.match(/\d+$/)[0];
-					let band     = t.querySelector(".trackSplitBands");
+					let band     = t.querySelector(".trackSplitBands").value;
 					
 					let track    = new Track(id);
 					this.tracks.push(track);
@@ -173,7 +173,7 @@ class Release extends Submission{
 						release:      this.id,
 						index:        +t.querySelector(".trackNumberField").value,
 						disc:         discNumber,
-						band:         bandsPerTrack ? band.value.replace(/^@/, "") : null,
+						band:         bandsPerTrack ? /^@/.test(band) ? band.replace(/^@/, "") : +band : null,
 						side:         !hasSides ? null : sideIndices.slice(0, t.sectionRowIndex).filter(o => o).pop()
 					});
 				}
