@@ -106,9 +106,10 @@ class Member extends Resource{
 	 *
 	 * @param {HTMLElement} artist - Chunk containing artist-specific data
 	 * @param {HTMLElement} roles  - Chunk containing their roles in the line-up
+	 * @param {HTMLElement} bands  - Chunk holding which band the artist played with
 	 * @return {Promise}
 	 */
-	getMemberInfo(artist, roles){
+	getMemberInfo(artist, roles, bands){
 		let $        = s => artist.querySelector(s);
 		
 		/** Parse the main member-related data */
@@ -117,7 +118,7 @@ class Member extends Resource{
 		this.type    = $("select[name^='type']").value;
 		let active   = $("input[type='checkbox'][id^='status_']");
 		if(active)
-			this.active  = active.checked;
+			this.active = active.checked;
 		
 		
 		/** Now start collecting the roles */
@@ -125,6 +126,13 @@ class Member extends Resource{
 		for(let row of roleRows){
 			let role = new Role(row);
 			this.roles[role.id] = role;
+		}
+		
+		
+		/** For splits, scrape which band the member's assigned to */
+		if(bands){
+			let bandID = bands.querySelector(".trackSplitBands > option[selected]").value;
+			this.band  = /^@/.test(bandID) ? bandID.replace(/^@/, "") : +bandID;
 		}
 
 
@@ -146,6 +154,7 @@ class Member extends Resource{
 		let result = {
 			for:     this.for,
 			entity:  this.artist,
+			band:    this.band,
 			type:    this.type,
 			alias:   this.alias,
 			active:  this.active,
@@ -154,6 +163,7 @@ class Member extends Resource{
 		
 		/** Don't leave clutter laying around */
 		if(!result.alias) delete result.alias;
+		if(!result.band)  delete result.band;
 		
 		return result;
 	}
@@ -190,8 +200,9 @@ class Member extends Resource{
 
 			for(let row of roles){
 				let id       = row.id.match(/_(\d+)$/)[1];
+				let bands    = document.querySelector("#artistBands_" + id);
 				let roles    = document.querySelector("#roleList_" + id);
-				promises.push( new Member(id, this).load([row, roles]) );
+				promises.push( new Member(id, this).load([row, roles, bands]) );
 			}
 			
 			this.log("Done: " + label);
