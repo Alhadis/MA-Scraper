@@ -16,10 +16,10 @@ import Role     from "./role.js";
  */
 class Member extends Resource{
 	
-	TYPE_MAIN     = 1;
-	TYPE_GUEST    = 2;
-	TYPE_LIVE     = 3;
-	TYPE_MISC     = 4;
+	static TYPE_MAIN     = 1;
+	static TYPE_GUEST    = 2;
+	static TYPE_LIVE     = 3;
+	static TYPE_MISC     = 4;
 
 	
 	/**
