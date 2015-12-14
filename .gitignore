@@ -25,4 +25,7 @@ $RECYCLE.BIN/
 error_log
 node_modules
 components
+
+## Project-specific
 .devrc.json
+data
