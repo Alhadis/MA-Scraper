@@ -131,8 +131,16 @@ class Member extends Resource{
 		
 		/** For splits, scrape which band the member's assigned to */
 		if(bands){
-			let bandID = bands.querySelector(".trackSplitBands > option[selected]").value;
-			this.band  = /^@/.test(bandID) ? bandID.replace(/^@/, "") : +bandID;
+			let bandID = (bands.querySelector(".trackSplitBands > option[selected]") || {}).value;
+			if(bandID)
+				this.band = /^@/.test(bandID) ? bandID.replace(/^@/, "") : +bandID;
+			
+			/**
+			 * If there wasn't a band selected, it means the artist was still assigned an unlisted band.
+			 * Somewhere in mid-2015, the ability to assign unlisted bands to artists on releases was revoked in
+			 * an effort to keep line-ups relevant to the site. Some line-ups still retain this old information.
+			 */
+			else this.log("Missing band ID");
 		}
 
 

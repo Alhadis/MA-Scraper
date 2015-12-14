@@ -215,10 +215,43 @@ class Release extends Submission{
 		
 		return Scraper.getHTML(url).then(window => {
 			this.log("Received: Peripherals");
-			let promises    = [];
+			let promises  = [];
+			let document  = window.document;
+			
 			
 			/** Get the release's creation/modification details */
 			promises.push(this.parseAuditTrail(window));
+			
+			
+			/** Create an artists-per-band map to help disambiguate split line-ups */
+			if(/^\s*Type:\s*Split/.test(document.querySelector("#album_info > dl.float_left").textContent)){
+				this.splitCredits = {};
+				
+				let scrape = (type, el) => {
+					if(!el) return;
+					
+					this.splitCredits[type] = {};
+					let currentBand;
+					let lineUp = el.querySelectorAll(".lineupTable > tbody > tr");
+					for(let row of Array.from(lineUp)){
+						
+						/** Switching to a new band in the split's line-up */
+						if(!row.className)
+							currentBand = row.textContent.trim();
+						
+						/** Adding an existing musician to a band on the split */
+						else if(row.classList.contains("lineupRow")){
+							let id = row.querySelector("a").href.match(/\d+$/)[0];
+							this.splitCredits[type][id] = currentBand;
+						}
+					}
+				};
+				
+				let $ = s => document.querySelector(s);
+				scrape(Member.TYPE_MAIN,  $("#album_members_lineup"));
+				scrape(Member.TYPE_GUEST, $("#album_members_guest"));
+			}
+			
 			
 			return Promise.all(promises);
 		});
@@ -293,13 +326,44 @@ class Release extends Submission{
 	 * @return {Promise}
 	 */
 	loadFinished(){
+		let promises = [];
 		
 		/** Don't bother loading reissues if this actually IS a reissue. */
 		if(this.parent) return Promise.resolve();
 		
+		/** If we have auxiliary split-related line-up data, put it to use */
+		if(this.splitCredits){
+			
+			/** Make sure our list of credits point to actual Band instances when possible */
+			for(let i in this.splitCredits){
+				let band = this.for.find(e => e instanceof Band && e.name == this.splitCredits[i]);
+				if(band) this.splitCredits[i] = band;
+			}
+			
+			
+			/** Run through each member assigned to this split and double-check which band it's assigned to */
+			let members = Member.getAll();
+			let changed = 0;
+			for(let i in members){
+				let m      = members[i];
+				let lineUp = this.splitCredits[m.type];
+				
+				if(lineUp && m.for === this && !m.band){
+					let artist     = m.artist;
+					let bandName   = lineUp[artist.id];
+					
+					changed || this.log("Correcting split's line-up:");
+					m.log(`Fixing credit: ${m.alias || artist.alias || artist.name} -> "${bandName}"`);
+					m.band = bandName;
+					++changed;
+				}
+			}
+		}
+		
+		
 		this.log("Loading: Other versions");
 		let url = `http://www.metal-archives.com/release/ajax-versions/current/${this.id}/parent/${this.id}`;
-		return Scraper.getHTML(url).then(window => {
+		promises.push(Scraper.getHTML(url).then(window => {
 			this.log("Received: Other versions");
 			let promises = [];
 			
@@ -316,7 +380,9 @@ class Release extends Submission{
 			
 			this.log("Done: Other versions");
 			return Promise.all(promises);
-		});
+		}));
+		
+		return Promise.all(promises);
 	}
 	
 	
