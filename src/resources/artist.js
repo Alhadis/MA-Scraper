@@ -103,12 +103,17 @@ class Artist extends Submission{
 		let document = window.document;
 		let members  = document.querySelectorAll(".member_in_band");
 		
-		let loadReleases = el => {
+		let loadReleases = (el, bandName) => {
 			let releases = el.querySelectorAll("tr[id^='memberInAlbum_']");
 			if(releases.length){
 				for(let r of releases){
-					let memberID = r.innerHTML.match(/return deleteMember\((\d+)\)/)[1];
-					promises.push(new Member(memberID).load());
+					let member  = new Member(r.innerHTML.match(/return deleteMember\((\d+)\)/)[1]);
+					promises.push(member.load());
+					
+					if(bandName){
+						member.log("Updated unlisted band credit: " + bandName);
+						member.band = bandName;
+					}
 				}
 			}
 		};
@@ -124,7 +129,7 @@ class Artist extends Submission{
 			if(!bandLink.length){
 				let roleID = (i.innerHTML.match(/metal-archives\.com\/lineup\/edit-roles\/id\/(\d+)/i) || {})[1];
 				if(roleID) promises.push(new Member(roleID).load());
-				loadReleases(i);
+				loadReleases(i, bandName.textContent.trim());
 			}
 			
 			

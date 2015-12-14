@@ -216,42 +216,9 @@ class Release extends Submission{
 		return Scraper.getHTML(url).then(window => {
 			this.log("Received: Peripherals");
 			let promises  = [];
-			let document  = window.document;
-			
 			
 			/** Get the release's creation/modification details */
 			promises.push(this.parseAuditTrail(window));
-			
-			
-			/** Create an artists-per-band map to help disambiguate split line-ups */
-			if(/^\s*Type:\s*Split/.test(document.querySelector("#album_info > dl.float_left").textContent)){
-				this.splitCredits = {};
-				
-				let scrape = (type, el) => {
-					if(!el) return;
-					
-					this.splitCredits[type] = {};
-					let currentBand;
-					let lineUp = el.querySelectorAll(".lineupTable > tbody > tr");
-					for(let row of Array.from(lineUp)){
-						
-						/** Switching to a new band in the split's line-up */
-						if(!row.className)
-							currentBand = row.textContent.trim();
-						
-						/** Adding an existing musician to a band on the split */
-						else if(row.classList.contains("lineupRow")){
-							let id = row.querySelector("a").href.match(/\d+$/)[0];
-							this.splitCredits[type][id] = currentBand;
-						}
-					}
-				};
-				
-				let $ = s => document.querySelector(s);
-				scrape(Member.TYPE_MAIN,  $("#album_members_lineup"));
-				scrape(Member.TYPE_GUEST, $("#album_members_guest"));
-			}
-			
 			
 			return Promise.all(promises);
 		});
@@ -331,31 +298,27 @@ class Release extends Submission{
 		/** Don't bother loading reissues if this actually IS a reissue. */
 		if(this.parent) return Promise.resolve();
 		
-		/** If we have auxiliary split-related line-up data, put it to use */
-		if(this.splitCredits){
+		
+		/** If this release is a split, double-check the credits are accurate */
+		if("Split" === this.type){
+			let members       = Member.getAll();
+			let listedBands   = this.for.filter(b => b instanceof Band);
+			let onlyOneListed = listedBands.length === 1;
 			
-			/** Make sure our list of credits point to actual Band instances when possible */
-			for(let i in this.splitCredits){
-				let band = this.for.find(e => e instanceof Band && e.name == this.splitCredits[i]);
-				if(band) this.splitCredits[i] = band;
-			}
-			
-			
-			/** Run through each member assigned to this split and double-check which band it's assigned to */
-			let members = Member.getAll();
-			let changed = 0;
 			for(let i in members){
-				let m      = members[i];
-				let lineUp = this.splitCredits[m.type];
+				let m = members[i];
 				
-				if(lineUp && m.for === this && !m.band){
-					let artist     = m.artist;
-					let bandName   = lineUp[artist.id];
+				if(m.for === this && !m.band){
+					let artist = m.artist;
 					
-					changed || this.log("Correcting split's line-up:");
-					m.log(`Fixing credit: ${m.alias || artist.alias || artist.name} -> "${bandName}"`);
-					m.band = bandName;
-					++changed;
+					/** Splits with only one listed band won't show band selectors, so credits for listed bands will be blank too. */
+					if(onlyOneListed){
+						m.log(`Fixed missing credit for listed band: ${listedBands[0].name}`);
+						m.band = listedBands[0];
+					}
+					
+					/** If this is an unlisted band, loading the artist's data will smooth everything out */
+					promises.push(artist.load());
 				}
 			}
 		}
