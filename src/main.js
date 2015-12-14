@@ -27,6 +27,7 @@ import Vote      from "./resources/vote.js";
 let {options, argv} = getOptions(process.argv.slice(2), {
 	"-h, --help":          "",
 	"-e, --embed-images":  "",
+	"-p, --pretty-print":  "",
 	"-s, --save-images":   "<path>",
 	"-l, --log-level":     "<n=\\d+>",
 	"-u, --user-config":   "<path>"
@@ -110,7 +111,7 @@ Scraper.init(username, password)
 				.then(() => {
 					let done = () => {
 						console.warn("Done!");
-						console.log(Exporter.JSON());
+						console.log(Exporter.JSON(options.prettyPrint));
 					};
 					
 					/** Decide if we need to load the images, too */

@@ -92,6 +92,7 @@ class Feedback{
 
 			  -h, --help                 Display this help message and exit
 			  -e, --embed-images         Embed images directly into generated JSON
+			  -p, --pretty-print         Pretty-print the JSON data
 			  -s, --save-images <path>   Directory to save images to
 			  -l, --log-level   <level>  Extent of logging feedback
 			  -u, --user-config <path>   Path of user-login file, relative to program

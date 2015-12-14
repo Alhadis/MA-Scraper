@@ -25,9 +25,10 @@ class Exporter{
 	/**
 	 * Export all loaded data as a JSON-encoded string.
 	 *
+	 * @param {Boolean} prettyPrint
 	 * @return {String}
 	 */
-	static JSON(){
+	static JSON(prettyPrint){
 		let $ = o => o.toJSON();
 		
 		let result = {
@@ -56,7 +57,7 @@ class Exporter{
 		for(let name of emptyProps)
 			delete result[name];
 		
-		return JSON.stringify(result);
+		return JSON.stringify(result, undefined, prettyPrint ? "\t" : undefined);
 	}
 }
 
