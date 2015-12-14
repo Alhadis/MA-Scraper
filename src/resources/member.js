@@ -16,6 +16,12 @@ import Role     from "./role.js";
  */
 class Member extends Resource{
 	
+	TYPE_MAIN     = 1;
+	TYPE_GUEST    = 2;
+	TYPE_LIVE     = 3;
+	TYPE_MISC     = 4;
+
+	
 	/**
 	 * Create a new member instance.
 	 *
@@ -219,10 +225,5 @@ class Member extends Resource{
 	}
 }
 
-/** Member type constants */
-Member.TYPE_MAIN     = 1;
-Member.TYPE_GUEST    = 2;
-Member.TYPE_LIVE     = 3;
-Member.TYPE_MISC     = 4;
 
 export default Member;
