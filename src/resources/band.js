@@ -4,6 +4,7 @@ import Scraper     from "../app/scraper.js";
 import Submission  from "./submission.js";
 import Release     from "./release.js";
 import Label       from "./label.js";
+import Link        from "./link.js";
 import Member      from "./member.js";
 import User        from "./user.js";
 import Vote        from "./vote.js";
