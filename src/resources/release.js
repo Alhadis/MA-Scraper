@@ -164,18 +164,21 @@ class Release extends Submission{
 					
 					let track    = new Track(id);
 					this.tracks.push(track);
-					track.load({
-						name:         t.querySelector(".trackTitleField").value,
-						length:       t.querySelector("#length_"         + id).value,
-						lyrics:       i.querySelector("#lyricsBox_"      + id).value,
-						instrumental: t.querySelector("#isInstrumental_" + id).checked,
-						bonus:        t.querySelector("#isBonus_"        + id).checked,
-						release:      this.id,
-						index:        +t.querySelector(".trackNumberField").value,
-						disc:         discNumber,
-						band:         bandsPerTrack ? /^@/.test(band) ? band.replace(/^@/, "") : +band : null,
-						side:         !hasSides ? null : sideIndices.slice(0, t.sectionRowIndex).filter(o => o).pop()
-					});
+					
+					/** Prevent tracks being attached to reissues with inherited tracklists */
+					if(!track.release || (track.release.parent && !this.parent))
+						track.load({
+							name:         t.querySelector(".trackTitleField").value,
+							length:       t.querySelector("#length_"         + id).value,
+							lyrics:       i.querySelector("#lyricsBox_"      + id).value,
+							instrumental: t.querySelector("#isInstrumental_" + id).checked,
+							bonus:        t.querySelector("#isBonus_"        + id).checked,
+							release:      this.id,
+							index:        +t.querySelector(".trackNumberField").value,
+							disc:         discNumber,
+							band:         bandsPerTrack ? /^@/.test(band) ? band.replace(/^@/, "") : +band : null,
+							side:         !hasSides ? null : sideIndices.slice(0, t.sectionRowIndex).filter(o => o).pop()
+						});
 				}
 			}
 			
