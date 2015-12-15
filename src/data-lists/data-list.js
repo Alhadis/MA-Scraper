@@ -1,6 +1,7 @@
 "use strict";
 
-import Scraper from "../app/scraper.js";
+import Feedback from "../app/feedback.js";
+import Scraper  from "../app/scraper.js";
 
 
 class DataList{
@@ -36,7 +37,17 @@ class DataList{
 		
 		return Scraper.get(this.url + args).then(result => {
 			this.start += this.length;
-			let data = JSON.parse(result);
+			let data = result.replace(/(\n\t"sEcho": ),/, "$10,")
+			
+			try{
+				data = JSON.parse(data);
+			} catch(e){
+				let text = "JSON parsing error:\n";
+				text += "  - URL:      " + this.url + args + "\n";
+				text += "  - Raw data: " + result;
+				Feedback.error(text);
+				throw new SyntaxError(e);
+			}
 			
 			/** Store the total number of results */
 			if(null === this.totalResults)

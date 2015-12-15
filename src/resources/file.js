@@ -51,7 +51,11 @@ class File extends Resource{
 						this.data = Buffer.concat(chunks);
 						resolve();
 					});
-			});
+			
+			}).on("error", error => {
+				Feedback.error(`Trouble loading file from ${this.id}`);
+				reject(error);
+			})
 		});
 	}
 	

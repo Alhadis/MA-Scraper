@@ -132,6 +132,10 @@ class Scraper{
 					resolve(window);
 				}
 			});
+		}).catch(error => {
+			Feedback.error(error);
+			Feedback.error("Attempting to reload HTML document: " + url);
+			return this.getHTML(url);
 		});
 	}
 	
@@ -153,6 +157,10 @@ class Scraper{
 				.then(result => {
 					result.text().then(text => resolve(text, result));
 				});
+		}).catch(error => {
+			Feedback.error(error);
+			Feedback.error("Reloading URL: " + url);
+			return this.get(url);
 		});
 	}
 }

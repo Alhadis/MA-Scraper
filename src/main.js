@@ -123,7 +123,10 @@ Scraper.init(username, password)
 							mkdirp.sync(saveImages);
 						
 						File.embedData = embedImages;
-						File.loadAll(saveImages).then(done).catch(e => {
+						File.loadAll(saveImages).then(() => {
+							console.warn("Finished loading images.");
+							done();
+						}).catch(e => {
 							Feedback.error(e);
 							process.exit(7);
 						});
