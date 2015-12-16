@@ -8,7 +8,7 @@ let instances	= new Map();
 class Resource{
 
 	/**
-	 * Returns an instance of this resource's subclassed type by ID.
+	 * Return an instance of this resource's subclassed type by ID.
 	 *
 	 * @param {String} id - Resource's unique identifier
 	 * @return {Resource}
@@ -32,7 +32,7 @@ class Resource{
 
 
 	/**
-	 * Stores a globally-accessible reference to a resource instance
+	 * Store a globally-accessible reference to a resource instance
 	 *
 	 * @param {String}   id       - Resource's unique identifier
 	 * @param {Resource} instance - Reference to the resource itself
@@ -55,7 +55,7 @@ class Resource{
 
 
 	/**
-	 * Creates or returns a reference to a Resource object.
+	 * Create or return a reference to a Resource object.
 	 *
 	 * If a resource of the same type and ID's been created, a reference to
 	 * it's returned instead; this allows asynchronous collation of data.
@@ -105,7 +105,7 @@ class Resource{
 
 
 	/**
-	 * Sends a string to the Feedback class for terminal display.
+	 * Send a string to the Feedback class for terminal display.
 	 *
 	 * @param {String} text
 	 * @access private

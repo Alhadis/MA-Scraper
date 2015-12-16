@@ -8,7 +8,7 @@ const BASE_URL = "http://www.metal-archives.com/";
 class Scraper{
 
 	/**
-	 * Authenticates the session with MA's server before pulling data.
+	 * Authenticate the session with MA's server before pulling data.
 	 *
 	 * Note that an account is required to have moderator permissions.
 	 *
@@ -80,7 +80,7 @@ class Scraper{
 
 
 	/**
-	 * Stores a generated login cookie.
+	 * Store a generated login cookie.
 	 *
 	 * @param {String|Array} data - An array of cookie headers
 	 * @static
@@ -103,7 +103,7 @@ class Scraper{
 
 
 	/**
-	 * Retrieves the session's login cookie as a concatenated list of RFC6265-style headers.
+	 * Retrieve the session's login cookie as a concatenated list of RFC6265-style headers.
 	 *
 	 * @return {String}
 	 * @static
@@ -116,7 +116,7 @@ class Scraper{
 
 
 	/**
-	 * Asynchronously loads an HTML page as a DOM tree.
+	 * Asynchronously load an HTML page as a DOM tree.
 	 *
 	 * @param {String} url - Absolute URL of the HTML page to retrieve
 	 * @return {Promise}
@@ -142,7 +142,7 @@ class Scraper{
 	
 	
 	/**
-	 * Asynchronously loads a page as a plain-text document.
+	 * Asynchronously load a page as a plain-text document.
 	 *
 	 * @param {String} url - Absolute URL of the page to retrieve
 	 * @return {Promise}

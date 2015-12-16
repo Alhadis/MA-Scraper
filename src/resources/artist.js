@@ -14,7 +14,7 @@ class Artist extends Submission{
 	
 	
 	/**
-	 * Loads this artist's data from Metal Archives.
+	 * Load the artist's data from Metal Archives.
 	 *
 	 * @param {Boolean} saveListedBands - If TRUE, will list each band/release the artist's credited in.
 	 * @return {Promise}
