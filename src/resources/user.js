@@ -62,7 +62,7 @@ class User extends Resource{
 	
 	loadCore(){
 		this.log("Loading: Main data");
-		let url = "http://www.metal-archives.com/users/" + encodeURIComponent(this.id);
+		let url = "http://www.metal-archives.com/users/" + encodeURIComponent(this.name || this.id);
 
 		return Scraper.getHTML(url).then(window => {
 			this.log("Received: Main data");
