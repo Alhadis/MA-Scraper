@@ -35,32 +35,37 @@ class DataList{
 	load(){
 		let args = "?" + queryString.stringify(this.getArgs());
 		
-		return Scraper.get(this.url + args).then(result => {
-			this.start += this.length;
-			let data = result.replace(/(\n\t"sEcho": ),/, "$10,")
+		return Scraper.get(this.url + args)
+			.then(result => {
+				this.start += this.length;
+				let data = result.replace(/(\n\t"sEcho": ),/, "$10,")
+				
+				try{
+					data = JSON.parse(data);
+				} catch(e){
+					let text = "JSON parsing error:\n";
+					text += "  - URL: "      + this.url + args + "\n";
+					text += "  - Raw data: " + result;
+					Feedback.error(text);
+					return Feedback.reject(new SyntaxError(e));
+				}
+				
+				/** Store the total number of results */
+				if(null === this.totalResults)
+					this.totalResults = +data.iTotalRecords;
+				
+				this.data.push(...(data.aaData));
+				
+				/** Still some results left to load */
+				if(this.data.length < this.totalResults)
+					return this.load();
+				
+				else return this;
 			
-			try{
-				data = JSON.parse(data);
-			} catch(e){
-				let text = "JSON parsing error:\n";
-				text += "  - URL:      " + this.url + args + "\n";
-				text += "  - Raw data: " + result;
-				Feedback.error(text);
-				throw new SyntaxError(e);
-			}
-			
-			/** Store the total number of results */
-			if(null === this.totalResults)
-				this.totalResults = +data.iTotalRecords;
-			
-			this.data.push(...(data.aaData));
-			
-			/** Still some results left to load */
-			if(this.data.length < this.totalResults)
+			}).catch(error => {
+				this.log("Reattempting failed payload");
 				return this.load();
-			
-			else return this;
-		});
+			});
 	}
 	
 	
