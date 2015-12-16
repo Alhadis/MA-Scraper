@@ -25,7 +25,7 @@ class Vote extends Resource{
 		});
 		
 		/** Concatenate an awkward ID cobbled together from the user and bands in question */
-		super(user.id + ": " + bandIDs.join(", "));
+		super((user.name || user.id) + ": " + bandIDs.join(", "));
 		
 		this.user  = user;
 		this.bands = bands;
@@ -44,6 +44,35 @@ class Vote extends Resource{
 	 */
 	toJSON(property){
 		return this.score;
+	}
+	
+	
+	
+	/**
+	 * Export an ordered, JSON-friendly representation of every band similarity vote cast by a user.
+	 *
+	 * @return {Object}
+	 */
+	static toJSON(){
+		let items     = [];
+		let instances = this.getAll();
+		for(let i in instances)
+			items.push({
+				id:   instances[i].id,
+				data: instances[i].toJSON()
+			});
+		
+		/** Order results alphabetically */
+		items.sort((a, b) => {
+			if(a.id < b.id) return -1;
+			if(a.id > b.id) return 1;
+			return 0;
+		});
+		
+		let results = {};
+		for(let i of items)
+			results[i.id] = i.data;
+		return results;
 	}
 }
 

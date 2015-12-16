@@ -151,10 +151,26 @@ class Resource{
 	 * @return {Object}
 	 */
 	static toJSON(){
-		let results   = {};
+		let items     = [];
 		let instances = this.getAll();
 		for(let i in instances)
-			results[instances[i].id] = instances[i].toJSON();
+			items.push({
+				id:   instances[i].id,
+				data: instances[i].toJSON()
+			});
+
+		/** Ensure resources are ordered by ID, not when they were created */
+		items.sort((a, b) => {
+			let A = +a.id;
+			let B = +b.id;
+			if(A < B) return -1;
+			if(A > B) return 1;
+			return 0;
+		});
+		
+		let results   = {};
+		for(let i of items.sort())
+			results[i.id] = i.data;
 		return results;
 	}
 }

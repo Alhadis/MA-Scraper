@@ -31,6 +31,8 @@ let roles = {
 
 class User extends Resource{
 	
+	static maxLoadAttempts = 20;
+	
 	
 	/**
 	 * Create a new User reference
@@ -59,19 +61,36 @@ class User extends Resource{
 	}
 
 
-	
-	loadCore(){
-		this.log("Loading: Main data");
-		let url = "http://www.metal-archives.com/users/" + encodeURIComponent(this.name || this.id);
-
+	/**
+	 * Load the majority of information on a user's profile.
+	 *
+	 * @param {Number} attempts - Number of previous attempts to load the page. Tracked internally.
+	 * @return {Promise}
+	 */
+	loadCore(attempts = 0){
+		let task = "Main data" + (attempts ? ` (Previous attempts: ${attempts})` : "");
+		let url  = "http://www.metal-archives.com/users/" + encodeURIComponent(this.name || this.id);
+		this.log("Loading: " + task);
+		
 		return Scraper.getHTML(url).then(window => {
-			this.log("Received: Main data");
-
+			this.log("Received: " + task);
+			
 			let document     = window.document;
 			let $            = s => document.querySelector(s);
 			
-			/** Bail early if the user's deactivated their account */
+			
+			/** Profile failed to load */
 			if(/^Error 404/i.test(document.title)){
+				
+				/** Try reloading the page a few times; loading issues may cause some pages to load improperly */
+				if(attempts < User.maxLoadAttempts){
+					this.log(`Unable to load profile: retrying (attempt #${attempts} / ${User.maxLoadAttempts})`);
+					return new Promise(resolve => {
+						setTimeout(resolve, 1000);
+					}).then(() => this.loadCore(++attempts));
+				}
+				
+				/** Otherwise, bail if the user's really deactivated their account */
 				this.deactivated = true;
 				return;
 			}
@@ -247,9 +266,27 @@ class User extends Resource{
 				return i;
 			};
 			
-			if(collection.length) lists.collection = collection.map(tidy);
-			if(tradeList.length)  lists.trade      = tradeList.map(tidy);
-			if(wishList.length)   lists.wish       = wishList.map(tidy);
+			let sort = (a, b) => {
+				let scalar = {number: 1, string: 1};
+				let A      = +(scalar[typeof a] ? a : a.id);
+				let B      = +(scalar[typeof b] ? b : b.id);
+				if(A < B) return -1;
+				if(A > B) return 1;
+				
+				/** IDs match, but versions might differ */
+				A = "version" in a ? +a.version : 0;
+				B = "version" in b ? +b.version : 0;
+				if(A < B) return -1;
+				if(A > B) return 1;
+				
+				/** This shouldn't happen. Ever. */
+				this.log(`Unable to properly sort releases in collection: ${[, a, b].join("\n - ")}`);
+				return 0;
+			};
+			
+			if(collection.length) lists.collection = collection.sort(sort).map(tidy);
+			if(tradeList.length)  lists.trade      = tradeList.sort(sort).map(tidy);
+			if(wishList.length)   lists.wish       = wishList.sort(sort).map(tidy);
 			result.lists = lists;
 		}
 		
@@ -268,7 +305,7 @@ class User extends Resource{
 	 * @return {Object}
 	 */
 	static toJSON(){
-		let results   = {};
+		let items     = [];
 		let instances = this.getAll();
 		
 		for(let i in instances){
@@ -283,9 +320,24 @@ class User extends Resource{
 				delete value.id;
 			}
 			
-			results[key] = value;
+			items.push({
+				id:   key,
+				data: value
+			});
 		}
 		
+		/** Force user IDs to be enumerated alphabetically */
+		items.sort((a, b) => {
+			let A = a.id;
+			let B = b.id;
+			if(A < B) return -1;
+			if(A > B) return 1;
+			return 0;
+		});
+		
+		let results   = {};
+		for(let i of items)
+			results[i.id] = i.data;
 		return results;
 	}
 }
