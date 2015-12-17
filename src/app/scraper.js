@@ -135,7 +135,7 @@ class Scraper{
 		}).catch(error => {
 			Feedback.error(error);
 			Feedback.error("Attempting to reload HTML document: " + url);
-			return this.getHTML(url);
+			return new Promise(resolve => setTimeout(resolve, 1000)).then(() => this.getHTML(url));
 		});
 	}
 	
@@ -160,7 +160,7 @@ class Scraper{
 		}).catch(error => {
 			Feedback.error(error);
 			Feedback.error("Reloading URL: " + url);
-			return this.get(url);
+			return new Promise(resolve => setTimeout(resolve, 1000)).then(() => this.get(url));
 		});
 	}
 }
