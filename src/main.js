@@ -114,8 +114,30 @@ Scraper.init(username, password)
 			if(Artist === resourceClass)
 				loadArgs = [true];
 			
+			
 			/** Let's get loading */
 			subject.load.apply(subject, loadArgs)
+				
+				/** All data's loaded; make sure all Users have IDs available */
+				.then(() => {
+					console.warn("Checking for users with missing IDs");
+					let promises = [];
+					
+					/** Run through all users and check we've got their IDs */
+					let users = User.getAll();
+					for(let i in users){
+						let user = users[i];
+						
+						/** Only bother with active users whose internal IDs are still absent */
+						if(!user.name && !user.deactivated)
+							promises.push(user.load());
+					}
+					
+					return Promise.all(promises);
+				})
+				
+				
+				/** Done! */
 				.then(() => {
 					let done = () => {
 						console.warn("Done!");
