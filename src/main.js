@@ -107,7 +107,15 @@ Scraper.init(username, password)
 		}
 		
 		try{
-			new resourceClass(resourceID).load()
+			let subject  = new resourceClass(resourceID);
+			let loadArgs = [];
+			
+			/** If it's an Artist being exported, include a shallow copy of their bands list */
+			if(Artist === resourceClass)
+				loadArgs = [true];
+			
+			/** Let's get loading */
+			subject.load.apply(subject, loadArgs)
 				.then(() => {
 					let done = () => {
 						console.warn("Done!");
