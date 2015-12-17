@@ -18,11 +18,11 @@ class Edit extends Resource{
 		super(id);
 		
 		this.id      = id;
-		this.on      = data[0];
-		this.by      = new User(data[1].match(/>([^<]+)<\/a>/i)[1]);
-		this.note    = data[2];
-		this.details = [];
-		this.for     = new Set();
+		this.on      = this.on      || data[0];
+		this.by      = this.by      || new User(data[1].match(/>([^<]+)<\/a>/i)[1]);
+		this.note    = this.note    || data[2];
+		this.details = this.details || [];
+		this.for     = this.for     || new Set();
 		
 		/** Store whether or not this modification has additional details to load */
 		this.haveDetails = /ui-icon-plus/.test(data[3]);
@@ -38,11 +38,12 @@ class Edit extends Resource{
 	load(){
 		
 		/** Bail early if we know there's nothing else to load. */
-		if(!this.haveDetails) return Promise.resolve();
+		if(!this.haveDetails || this.loaded) return Promise.resolve();
 		
 		delete this.haveDetails;
 		this.log("Loading: Details");
-		let url = `http://www.metal-archives.com/history/ajax-details/id/${this.id}`;
+		this.loaded = true;
+		let url     = `http://www.metal-archives.com/history/ajax-details/id/${this.id}`;
 		
 		return Scraper.getHTML(url).then(window => {
 			this.log("Received: Details");
@@ -76,8 +77,16 @@ class Edit extends Resource{
 		if(this.ip)      result.ip       = this.ip;
 		if(this.note)    result.note     = this.note;
 		if(haveDetails)  result.details  = this.details;
-		if(this.for)     result.for      = [...this.for];
 		
+		/** Sort "for" array by each subject's object type */
+		if(this.for) result.for = [...this.for].sort((a, b) => {
+			let A = a.objectTypeID;
+			let B = b.objectTypeID;
+			if(A < B) return -1;
+			if(A > B) return 1;
+			return 0;
+		});
+
 		return result;
 	}
 }
