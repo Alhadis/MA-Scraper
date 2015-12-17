@@ -39,8 +39,8 @@ class Role extends Resource{
 	 */
 	toJSON(property){
 		let result = {name: this.name};
-		if(this.from) result.from = this.from;
-		if(this.to)   result.to   = this.to;
+		if(this.from) result.from = +this.from;
+		if(this.to)   result.to   = +this.to;
 		return result;
 	}
 }

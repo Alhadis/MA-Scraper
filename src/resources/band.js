@@ -387,7 +387,7 @@ class Band extends Submission{
 		if(this.location)        result.location   = this.location;
 		if(this.aka)             result.aka        = this.aka;
 		if(this.themes)          result.themes     = this.themes;
-		if(this.formed)          result.formed     = this.formed;
+		if(this.formed)          result.formed     = +this.formed;
 		if(haveActivity)         result.activity   = this.activity;
 		if(this.unsigned)        result.unsigned   = true;
 		if(haveLabels)           result.labels     = this.labels;

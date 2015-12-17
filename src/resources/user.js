@@ -225,11 +225,11 @@ class User extends Resource{
 		if(this.id)            result.id           = this.id;
 		if(this.name)          result.name         = this.name;
 		if(this.rank)          result.rank         = this.rank;
-		if(havePoints)         result.points       = this.points;
+		if(havePoints)         result.points       = +this.points;
 		if(this.email)         result.email        = this.email;
 		if(this.fullName)      result.fullName     = this.fullName;
 		if(this.gender)        result.gender       = this.gender;
-		if(this.age)           result.age          = this.age;
+		if(this.age)           result.age          = +this.age;
 		if(this.country)       result.country      = this.country;
 		if(this.url)           result.url          = this.url;
 		if(this.icq)           result.icq          = this.icq;

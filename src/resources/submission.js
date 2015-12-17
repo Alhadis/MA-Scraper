@@ -251,7 +251,7 @@ class Submission extends Resource{
 	 */
 	toJSON(property){
 		if(property) return {
-			id:   this.id,
+			id:  +this.id,
 			type: this.objectTypeName
 		};
 		

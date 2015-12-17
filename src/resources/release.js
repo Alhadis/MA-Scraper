@@ -173,7 +173,7 @@ class Release extends Submission{
 							lyrics:       i.querySelector("#lyricsBox_"      + id).value,
 							instrumental: t.querySelector("#isInstrumental_" + id).checked,
 							bonus:        t.querySelector("#isBonus_"        + id).checked,
-							release:      this.id,
+							release:      +this.id,
 							index:        +t.querySelector(".trackNumberField").value,
 							disc:         discNumber,
 							band:         bandsPerTrack ? /^@/.test(band) ? band.replace(/^@/, "") : +band : null,
