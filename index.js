@@ -18,6 +18,7 @@ global.getOptions   = require("get-options");
 global.mkdirp       = require("mkdirp");
 
 /** Resolve current working directory */
+global.oldpwd       = process.cwd();
 process.chdir(path.dirname(fs.realpathSync(process.argv[1])));
 
 /** Start the program */

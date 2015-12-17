@@ -119,8 +119,16 @@ Scraper.init(username, password)
 						console.warn("\nFinished loading data. Loading images.");
 						
 						/** If given a directory to save images to, make sure it exists */
-						if(saveImages)
+						if(saveImages){
+							
+							/** Resolve any paths relative to the user's working directory */
+							let cwd    = process.cwd();
+							process.chdir(oldpwd);
 							mkdirp.sync(saveImages);
+							saveImages = fs.realpathSync(saveImages);
+							console.warn("saveImages path resolved to: " + saveImages);
+							process.chdir(cwd);
+						}
 						
 						File.embedData = embedImages;
 						File.loadAll(saveImages).then(() => {
