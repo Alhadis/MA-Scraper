@@ -1,5 +1,6 @@
 "use strict";
 
+import Countries   from "../app/countries.js";
 import Scraper     from "../app/scraper.js";
 import Submission  from "./submission.js";
 import Release     from "./release.js";
@@ -61,7 +62,7 @@ class Band extends Submission{
 			this.name       = $("#bandName").value;
 			this.genre      = $("#genre").value;
 			this.status     = optionText("#status");
-			this.country    = $("#country").value;
+			this.country    = this.parseCountry($("#country"));
 			this.location   = $("#location").value;
 			this.aka        = $("#altSpell").value;
 			this.themes     = $("#themes").value;

@@ -1,6 +1,7 @@
 "use strict";
 
 import Scraper    from "../app/scraper.js";
+import Countries  from "../app/countries.js";
 import History    from "../data-lists/history.js";
 import ReportList from "../data-lists/report-list.js";
 import Resource   from "./resource.js";
@@ -75,7 +76,7 @@ class Submission extends Resource{
 	
 	
 	/**
-	 * Returns an ISO-safe date from three different page elements.
+	 * Return an ISO-safe date from three different page elements.
 	 *
 	 * DOM/CSS selectors may be passed in instead of element references
 	 *
@@ -105,6 +106,22 @@ class Submission extends Resource{
 			padZeroes(m.value || 0, 2),
 			padZeroes(d.value || 0, 2)
 		].join("-");
+	}
+	
+	
+	
+	/**
+	 * Return the value of a country list, and cache its contents for future reference.
+	 *
+	 * This simple wrapper ensures that the codes/names of each country are globally
+	 * accessible as static properties of the Countries helper class.
+	 *
+	 * @param {HTMLSelectElement} input
+	 * @return {String}
+	 */
+	parseCountry(input){
+		Countries.set(input);
+		return input.value;
 	}
 	
 	

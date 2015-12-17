@@ -4,6 +4,7 @@
 import Scraper   from "./app/scraper.js";
 import Feedback  from "./app/feedback.js";
 import Exporter  from "./app/exporter.js";
+import Countries from "./app/countries.js";
 
 /** Resource definitions */
 import Band      from "./resources/band.js";
@@ -117,6 +118,10 @@ Scraper.init(username, password)
 			
 			/** Let's get loading */
 			subject.load.apply(subject, loadArgs)
+			
+				/** Last-minute check we have a map of country codes/names available */
+				.then(() => !Countries.loaded ? Countries.load() : Promise.resolve())
+				
 				
 				/** All data's loaded; make sure all Users have IDs available */
 				.then(() => {
@@ -133,7 +138,18 @@ Scraper.init(username, password)
 							promises.push(user.load());
 					}
 					
-					return Promise.all(promises);
+					return Promise.all(promises).then(() => {
+						
+						/** Fix the country fields for all Users so they're represented by their ISO code/ID */
+						for(let i in users){
+							let user     = users[i];
+							let name     = user.country;
+							if(name){
+								user.country = Countries[name];
+								user.log(`Country ID set: "${name}" -> ${user.country}`);
+							}
+						}
+					});
 				})
 				
 				

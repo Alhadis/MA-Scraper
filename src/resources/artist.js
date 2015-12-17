@@ -53,7 +53,7 @@ class Artist extends Submission{
 			this.born     = this.parseDate(window, "#birthDateDay", "#birthDateMonth", "#birthDateYear");
 			this.died     = $("#deathDateUnknown").checked ? "Unknown" : this.parseDate(window, "#deathDateDay", "#deathDateMonth", "#deathDateYear");
 			this.diedOf   = $("#deathCause").value;
-			this.country  = $("#country").value;
+			this.country  = this.parseCountry($("#country"));
 			this.location = $("#location").value;
 			this.gender   = $("input[name='gender']:checked").value;
 			this.photo    = new File(($("#artist") || {}).href);

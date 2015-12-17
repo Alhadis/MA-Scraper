@@ -52,7 +52,7 @@ class Label extends Submission{
 			/** Extract basic info */
 			this.name            = $("#labelName").value;
 			this.status          = optionText("#status");
-			this.country         = $("#country").value;
+			this.country         = this.parseCountry($("#country"));
 			this.aka             = $("#altSpelling").value;
 			this.specialty       = $("#specialisation").value;
 			this.description     = $('textarea[name="description"]').value;
