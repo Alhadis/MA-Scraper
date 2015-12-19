@@ -66,6 +66,13 @@ class Countries{
 	 * @return {Promise}
 	 */
 	static load(){
+		
+		/** Avoid loading data if there's no need to */
+		if(this.loaded){
+			console.warn("Countries already loaded");
+			return Promise.resolve();
+		}
+		
 		console.warn("Loading countries from submission form");
 		let url = "http://www.metal-archives.com/band/add";
 		
