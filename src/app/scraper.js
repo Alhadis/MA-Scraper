@@ -317,6 +317,7 @@ class Scraper{
 	exportBlacklist(){
 		
 		return this.auth(username, password)
+			.then(Countries::Countries.load)
 			.then(() => {
 				console.warn("Blacklist: Loading");
 				
