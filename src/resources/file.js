@@ -7,6 +7,19 @@ import Resource   from "./resource.js";
 
 class File extends Resource{
 	
+	static extensions = {
+		"image/png":     ".png",
+		"image/bmp":     ".bmp",
+		"image/gif":     ".gif",
+		"image/jpeg":    ".jpg",
+		"image/webp":    ".webp",
+		"image/svg":     ".svg",
+		"image/svg+xml": ".svg",
+		"text/plain":    ".txt",
+		"text/html":     ".htm"
+	};
+	
+	
 	/**
 	 * Create a new file reference.
 	 *
@@ -16,8 +29,29 @@ class File extends Resource{
 	constructor(url){
 		super(url);
 		
+		/** Bail early for empty URLs */
+		if(!url) return this;
+		
+		
+		/** Is this a data URI? */
+		let dataURI = url.match(/^data:([^\/]+\/[^;,]+)((?:;[^,;]+?)*),(.*?)$/mi);
+		if(dataURI){
+			let [, mimeType, mimeAttr, content ] = dataURI;
+			mimeAttr           = mimeAttr.split(/;/g).filter(a => a);
+			
+			/** Identify the content's MIME type and prepare an impromptou filename */
+			let extension      = File.extensions[mimeType.toLowerCase()] || "";
+			this.base64Encoded = mimeAttr.some(a => a.toLowerCase() === "base64");
+			this.isDataURI     = true;
+			this.filename      = Date.now() + "-" + process.hrtime().join("-") + extension;
+			
+			/** Fill the .data property with the contents of the data URI */
+			this.data = new Buffer(content, this.base64Encoded ? "base64" : "binary");
+		}
+		
+		
 		/** Break the URL apart and store its separate path components for convenience */
-		if(url){
+		else{
 			let parts     = url.match(/^([^\/#\?]*:?\/\/)?(\/?(?:[^\/#\?]+\/)*)?([^\/#\?]+)?(?:\/(?=$))?(\?[^#]*)?(#.*)?$/);
 			this.pathname = (parts[2] || "").replace(/^(?:www\.)?metal-archives\.com\/?/, "");
 			this.filename =  parts[3] || "";
@@ -34,7 +68,7 @@ class File extends Resource{
 	load(){
 		
 		/** Don't bother doing anything if there's nothing to load */
-		if(!this.id) return Promise.resolve();
+		if(!this.id || this.isDataURI) return Promise.resolve();
 		
 		return new Promise((resolve, reject) => {
 			this.log("Loading: File data");
@@ -139,7 +173,7 @@ class File extends Resource{
 		let promises = [];
 		let files    = File.getAll();
 		for(let i in files)
-			files[i].data || i && promises.push(files[i].load().then(() => {
+			i && promises.push(files[i].load().then(() => {
 				let f = files[i];
 				if(saveTo && f.data)
 					return f.save(saveTo.replace(/\/*$/, "/") + f.filename);

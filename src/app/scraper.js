@@ -383,9 +383,7 @@ class Scraper{
 					let resources  = data[i] || {};
 					
 					if(resources){
-						console.warn(`Extracting images for ${i}`);
 						for(let i in resources){
-							
 							properties.forEach(n => {
 								let value = resources[i][n];
 								if(value) new File(value);
