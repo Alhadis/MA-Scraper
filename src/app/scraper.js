@@ -95,6 +95,12 @@ class Scraper{
 				break;
 			}
 			
+			/** Extract images from the URLs of an existing data dump */
+			case "images":{
+				this.extractImages(...args);
+				break;
+			}
+			
 			/** Assume the "command" is really the name of a resource-type to export */
 			default:{
 				this.extract(name, ...args);
@@ -183,12 +189,8 @@ class Scraper{
 								if(saveImages){
 									
 									/** Resolve any paths relative to the user's working directory */
-									let cwd    = process.cwd();
-									process.chdir(oldpwd);
-									mkdirp.sync(saveImages);
-									saveImages = fs.realpathSync(saveImages);
+									saveImages = this.resolvePath(saveImages, true);
 									console.warn("saveImages path resolved to: " + saveImages);
-									process.chdir(cwd);
 								}
 								
 								File.embedData = embedImages;
@@ -307,6 +309,100 @@ class Scraper{
 			data.map(CookieJar.parse).map(c => cookieJar.setCookieSync(c+"", BASE_URL));
 		}
 	}
+	
+	
+	
+	/**
+	 * Resolve a path relative to the user's current working directory.
+	 *
+	 * Remember, the program changes the CWD to the physical path of its executable before running.
+	 * This means a relative path given on command-line will only be relative to the *running program*,
+	 * not whatever folder the user's in. Obviously, this won't be what the user expects.
+	 * 
+	 * @param {String} input - A directory that may or may not be relative
+	 * @param {Boolean} make - If set, will create any intermediate subdirectories for the path using "mkdir -p"
+	 * @return {String}
+	 */
+	resolvePath(input, make){
+		let cwd    = process.cwd();
+		process.chdir(oldpwd);
+		make && mkdirp.sync(input);
+		let output = fs.realpathSync(input);
+		process.chdir(cwd);
+		return output;
+	}
+	
+	
+	
+	/**
+	 * Extract images from a previous data-export and write them to the filesystem.
+	 *
+	 * @param {String} from - Path to JSON dump
+	 * @param {String} into - Directory to save images to. Defaults to CWD
+	 * @return {Promise}
+	 */
+	extractImages(from, into){
+		
+		/** User didn't specify a data file to read from */
+		if(!from){
+			Feedback.error("No file specified");
+			process.exit(8);
+		}
+		
+		/** Start loadin' */
+		return new Promise((resolve, reject) => {
+			let path = this.resolvePath(from);
+			let to   = this.resolvePath(into || "./", true);
+			
+			fs.readFile(path, (error, data) => {
+				
+				/** Something bad happened */
+				if(error){
+					Feedback.error("File doesn't exist or couldn't be accessed");
+					Feedback.error(error);
+					process.exit(9);
+				}
+				
+				/** Parse the given file into an object */
+				try{ data = JSON.parse(data); }
+				catch(e){
+					Feedback.error("Couldn't parse supplied JSON data");
+					Feedback.error(e);
+					process.exit(10);
+				}
+				
+				
+				let lists = {
+					bands:   ["logo", "photo"],
+					artists: ["photo"],
+					labels:  ["logo"]
+				};
+				
+				for(let i in lists){
+					let properties = lists[i];
+					let resources  = data[i] || {};
+					
+					if(resources){
+						console.warn(`Extracting images for ${i}`);
+						for(let i in resources){
+							
+							properties.forEach(n => {
+								let value = resources[i][n];
+								if(value) new File(value);
+							});
+						}
+					}
+				}
+			
+			
+				/** Load all files that were instantiated in the above loop */
+				File.loadAll(to).then(() => {
+					console.warn("Done!");
+				});
+			});
+		});
+	}
+	
 	
 	
 	/**
