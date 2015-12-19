@@ -63,7 +63,7 @@ class DataList{
 				else return this;
 			
 			}).catch(error => {
-				this.log("Reattempting failed payload");
+				Feedback.error("Reattempting failed payload");
 				return this.load();
 			});
 	}
