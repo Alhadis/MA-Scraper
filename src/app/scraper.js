@@ -1,11 +1,240 @@
 "use strict";
 
-import Feedback from "./feedback.js";
+/** App-specific logic */
+import Options   from "./options.js";
+import Feedback  from "./feedback.js";
+import Countries from "./countries.js";
+import Exporter  from "./exporter.js";
 
+/** Resource definitions */
+import Band      from "../resources/band.js";
+import Artist    from "../resources/artist.js";
+import Release   from "../resources/release.js";
+import Resource  from "../resources/resource.js";
+import Member    from "../resources/member.js";
+import Report    from "../resources/report.js";
+import File      from "../resources/file.js";
+import Edit      from "../resources/edit.js";
+import Label     from "../resources/label.js";
+import Link      from "../resources/link.js";
+import Review    from "../resources/review.js";
+import Role      from "../resources/role.js";
+import Track     from "../resources/track.js";
+import User      from "../resources/user.js";
+import Vote      from "../resources/vote.js";
+
+
+/** Constants */
 const BASE_URL = "http://www.metal-archives.com/";
 
 
+/** Private variables */
+let options, creds, username, password, cookie, cookieJar;
+
+
+
 class Scraper{
+	
+	/** Exportable resource types */
+	exportables = {Artist, Band, Edit, Label, Link, Member, Release, Report, Review, Role, Track, User, Vote};
+	
+	
+	/**
+	 * Parse the user's command-line input and start the program.
+	 *
+	 * @constructor
+	 */
+	constructor(){
+		options       = new Options(process.argv.slice(2));
+		
+		/** Display help message if requested */
+		options.help && this.exec("help");
+		
+		/** Load user credentials */
+		try{
+			creds     = JSON.parse(fs.readFileSync(options.userConfig));
+			username  = creds.username;
+			password  = creds.password;
+			this.storeCookie(creds.cookie);
+		} catch(error){
+			Feedback.error("Unable to load configuration file: " + options.userConfig);
+			process.exit(5);
+		}
+		
+		/** Invoke the necessary instruction */
+		this.exec.call(this, ...options.argv);
+	}
+	
+	
+	
+	/**
+	 * Run a named subcommand.
+	 *
+	 * @param {String}   name - Name of the subcommand
+	 * @param {...Mixed} args - List of parameters passed to command
+	 * @return {Boolean} TRUE if the named command existed; FALSE otherwise
+	 */
+	exec(name, ...args){
+		name = (name || "").toLowerCase();
+		
+		switch(name){
+			
+			/** Print a short inline help message and bail */
+			case "help":{
+				Feedback.help();
+				process.exit(0);
+				break;
+			}
+			
+			/** Assume the "command" is really the name of a resource-type to export */
+			default:{
+				this.extract(name, ...args);
+				break;
+			}
+		}
+	}
+	
+	
+	
+	/**
+	 * Export a resource from the Metal Archives.
+	 *
+	 * @param {String} type - Type of resource to export, checked case-insensitively
+	 * @param {String} id   - Resource's unique identifier
+	 * @return {Promise}
+	 */
+	extract(type, id){
+		
+		/** Bark if no resource-type was given */
+		if(!type){
+			Feedback.error("No resource type specified");
+			process.exit(2);
+		}
+		
+		/** Assume sentence-case for the specified resource-type; saves us bothering about case-sensitivity */
+		let resourceClass = type[0].toUpperCase() + type.toLowerCase().substr(1);
+		
+		/** An invalid resource type was specified */
+		if(!(resourceClass = this.exportables[resourceClass])){
+			let examples  = [""].concat(Object.keys(this.exportables)).join("\n  - ").toLowerCase();
+			let message   = `"${type}" is not an exportable resource. Use one of the following: ${examples}\n`;
+			Feedback.error(message);
+			process.exit(4);
+		}
+		
+		/** Valid resource-type given, but no ID... */
+		if(!id){
+			Feedback.error("No resource ID specified");
+			process.exit(3);
+		}
+		
+		
+		
+		/** Login and get rockin' */
+		return this.auth(username, password)
+			.catch(e => { this.invalid = true; Feedback.error(e); })
+			.then(m  => {
+				
+				/** Bail if there was a problem authenticating the user */
+				if(this.invalid){
+					Feedback.error("Could not authorise user. Aborting.");
+					process.exit(1);
+					return;
+				}
+				
+				try{
+					let subject  = new resourceClass(id);
+					let loadArgs = [];
+					
+					/** If it's an Artist being exported, include a shallow copy of their bands list */
+					if(Artist === resourceClass)
+						loadArgs = [true];
+					
+					
+					/** Let's get loading */
+					subject.load.apply(subject, loadArgs)
+					
+						/** Last-minute check we have a map of country codes/names available */
+						.then(() => !Countries.loaded ? Countries.load() : Promise.resolve())
+						
+						
+						/** All data's loaded; make sure all Users have IDs available */
+						.then(() => {
+							console.warn("Checking for users with missing IDs");
+							let promises = [];
+							
+							/** Run through all users and check we've got their IDs */
+							let users = User.getAll();
+							for(let i in users){
+								let user = users[i];
+								
+								/** Only bother with active users whose internal IDs are still absent */
+								if(!user.name && !user.deactivated)
+									promises.push(user.load());
+							}
+							
+							return Promise.all(promises).then(() => {
+								
+								/** Fix the country fields for all Users so they're represented by their ISO code/ID */
+								for(let i in users){
+									let user     = users[i];
+									let name     = user.country;
+									if(name){
+										user.country = Countries[name];
+										user.log(`Country ID set: "${name}" -> ${user.country}`);
+									}
+								}
+							});
+						})
+						
+						
+						/** Done! */
+						.then(() => {
+							let done = () => {
+								console.warn("Done!");
+								console.log(Exporter.JSON(Exporter.getAll(), options.prettyPrint));
+							};
+							
+							/** Decide if we need to load the images, too */
+							let {embedImages, saveImages} = options;
+							if(embedImages || saveImages){
+								console.warn("\nFinished loading data. Loading images.");
+								
+								/** If given a directory to save images to, make sure it exists */
+								if(saveImages){
+									
+									/** Resolve any paths relative to the user's working directory */
+									let cwd    = process.cwd();
+									process.chdir(oldpwd);
+									mkdirp.sync(saveImages);
+									saveImages = fs.realpathSync(saveImages);
+									console.warn("saveImages path resolved to: " + saveImages);
+									process.chdir(cwd);
+								}
+								
+								File.embedData = embedImages;
+								return File.loadAll(saveImages).then(() => {
+									console.warn("Finished loading images.");
+									done();
+								}).catch(e => {
+									Feedback.error(e);
+									process.exit(7);
+								});
+							}
+							
+							/** Nope, no more loading to do. We're done here. */
+							else done();
+						})
+						.catch(e => {
+							Feedback.error(e);
+							process.exit(6);
+						});
+
+				} catch(e){ Feedback.error(e); }
+			});
+	}
+
+
 
 	/**
 	 * Authenticate the session with MA's server before pulling data.
@@ -15,14 +244,13 @@ class Scraper{
 	 * @param {String} username
 	 * @param {String} password
 	 * @return {Promise}
-	 * @static
 	 */
-	static init(username, password){
+	auth(username, password){
 
 		return new Promise((resolve, reject) => {
 			
 			/** Skip everything if we've been given presupplied cookie data */
-			if(this.cookie){
+			if(cookie){
 				console.warn(`Using presupplied cookie data`);
 				return resolve();
 			}
@@ -58,11 +286,11 @@ class Scraper{
 				}
 			}, result => {
 
-				this.cookie = result.headers["set-cookie"];
+				this.storeCookie(result.headers["set-cookie"]);
 				
 				/** Attempt to access a moderator-only page to verify we have required privileges */
 				return fetch("http://www.metal-archives.com/blacklist", {
-					headers: { cookie: this.cookie }
+					headers: { cookie: cookieJar.getCookieStringSync(BASE_URL) }
 				}).then(result => {
 					(403 == result.status) ?
 						reject(`User ${username} lacks moderator permissions.`) :
@@ -83,33 +311,22 @@ class Scraper{
 	 * Store a generated login cookie.
 	 *
 	 * @param {String|Array} data - An array of cookie headers
-	 * @static
 	 */
-	static set cookie(data){
+	storeCookie(data){
 
 		/** Create a shared cookie repository if we haven't done so yet */
-		this.cookieJar = this.cookieJar || new JSDom.createCookieJar();
+		cookieJar = cookieJar || new JSDom.createCookieJar();
 
 		/** Make sure we actually have data before bothering to do anything */
 		if(data){
+			cookie = data;
 			
 			/** Wrap solitary strings in an array */
 			if(!Array.isArray(data))
 				data = [data];
 
-			data.map(CookieJar.parse).map(c => this.cookieJar.setCookieSync(c+"", BASE_URL));
+			data.map(CookieJar.parse).map(c => cookieJar.setCookieSync(c+"", BASE_URL));
 		}
-	}
-
-
-	/**
-	 * Retrieve the session's login cookie as a concatenated list of RFC6265-style headers.
-	 *
-	 * @return {String}
-	 * @static
-	 */
-	static get cookie(){
-		return this.cookieJar ? this.cookieJar.getCookieStringSync(BASE_URL) : "";
 	}
 
 
@@ -125,9 +342,8 @@ class Scraper{
 
 		return new Promise((resolve, reject) => {
 			JSDom.env({
-				cookieJar: this.cookieJar,
-				url:    url,
-				done:   (error, window) => {
+				cookieJar, url,
+				done: (error, window) => {
 					if(error) reject(error);
 					resolve(window);
 				}
@@ -150,7 +366,7 @@ class Scraper{
 	static get(url){
 		
 		return new Promise((resolve, reject) => {
-			let args = {headers: {cookie: this.cookie}};
+			let args = {headers: {cookie: cookieJar ? cookieJar.getCookieStringSync(BASE_URL) : "" }};
 			
 			fetch(url, args)
 				.catch(error => reject(error))
