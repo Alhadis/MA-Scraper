@@ -157,7 +157,7 @@ Scraper.init(username, password)
 				.then(() => {
 					let done = () => {
 						console.warn("Done!");
-						console.log(Exporter.JSON(options.prettyPrint));
+						console.log(Exporter.JSON(Exporter.getAll(), options.prettyPrint));
 					};
 					
 					/** Decide if we need to load the images, too */

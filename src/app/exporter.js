@@ -23,12 +23,23 @@ import Vote      from "../resources/vote.js";
 class Exporter{
 	
 	/**
-	 * Export all loaded data as a JSON-encoded string.
+	 * Export data as a JSON-encoded string.
 	 *
+	 * @param {Object} input - Data to export
 	 * @param {Boolean} prettyPrint
 	 * @return {String}
 	 */
-	static JSON(prettyPrint){
+	static JSON(input, prettyPrint){
+		return JSON.stringify(input, undefined, prettyPrint ? "\t" : undefined);
+	}
+	
+	
+	/**
+	 * Return an optimised collation of all loaded data.
+	 *
+	 * @return {Object}
+	 */
+	static getAll(){
 		let $ = o => o.toJSON();
 		
 		let result = {
@@ -56,8 +67,7 @@ class Exporter{
 		
 		for(let name of emptyProps)
 			delete result[name];
-		
-		return JSON.stringify(result, undefined, prettyPrint ? "\t" : undefined);
+		return result;
 	}
 }
 
