@@ -22,6 +22,7 @@ class DataList{
 		
 		/** Collected data */
 		this.totalResults = null;
+		this.maxResults   = 0;
 		this.data         = [];
 	}
 	
@@ -57,7 +58,8 @@ class DataList{
 				this.data.push(...(data.aaData));
 				
 				/** Still some results left to load */
-				if(this.data.length < this.totalResults)
+				let max = this.maxResults ? Math.min(this.maxResults, this.totalResults) : this.totalResults;
+				if(this.data.length < max)
 					return this.load();
 				
 				else return this;
