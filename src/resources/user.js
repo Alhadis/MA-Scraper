@@ -1,8 +1,9 @@
 "use strict";
 
-import Scraper  from "../app/scraper.js";
-import Feedback from "../app/feedback.js";
-import Resource from "./resource.js";
+import Scraper   from "../app/scraper.js";
+import Feedback  from "../app/feedback.js";
+import Countries from "../app/countries.js";
+import Resource  from "./resource.js";
 
 
 /** Role-type constants */
@@ -339,6 +340,48 @@ class User extends Resource{
 		for(let i of items)
 			results[i.id] = i.data;
 		return results;
+	}
+	
+	
+	
+	/**
+	 * Load IDs for Users missing them and normalise country codes.
+	 *
+	 * This method should be called after data's finished being collected, but before
+	 * it's been serialised to JSON output.
+	 *
+	 * @return {Promise}
+	 */
+	static validate(){
+
+		/** Make sure we have country codes/names available */
+		return Countries.load().then(() => {
+			console.warn("Checking for users with missing IDs");
+			let promises = [];
+			
+			/** Run through all users and check we've got their IDs */
+			let users = User.getAll();
+			for(let i in users){
+				let user = users[i];
+				
+				/** Only bother with active users whose internal IDs are still absent */
+				if(!user.name && !user.deactivated)
+					promises.push(user.load());
+			}
+			
+			return Promise.all(promises).then(() => {
+				
+				/** Fix the country fields for all Users so they're represented by their ISO code/ID */
+				for(let i in users){
+					let user     = users[i];
+					let name     = user.country;
+					if(name){
+						user.country = Countries[name];
+						user.log(`Country ID set: "${name}" -> ${user.country}`);
+					}
+				}
+			});
+		})
 	}
 }
 

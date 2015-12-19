@@ -6,6 +6,9 @@ import Feedback  from "./feedback.js";
 import Countries from "./countries.js";
 import Exporter  from "./exporter.js";
 
+/** Data lists */
+import Blacklist from "../data-lists/blacklist.js";
+
 /** Resource definitions */
 import Band      from "../resources/band.js";
 import Artist    from "../resources/artist.js";
@@ -86,6 +89,12 @@ class Scraper{
 				break;
 			}
 			
+			/** Export the site's blacklist */
+			case "blacklist":{
+				this.exportBlacklist();
+				break;
+			}
+			
 			/** Assume the "command" is really the name of a resource-type to export */
 			default:{
 				this.extract(name, ...args);
@@ -154,38 +163,8 @@ class Scraper{
 					/** Let's get loading */
 					subject.load.apply(subject, loadArgs)
 					
-						/** Last-minute check we have a map of country codes/names available */
-						.then(() => !Countries.loaded ? Countries.load() : Promise.resolve())
-						
-						
 						/** All data's loaded; make sure all Users have IDs available */
-						.then(() => {
-							console.warn("Checking for users with missing IDs");
-							let promises = [];
-							
-							/** Run through all users and check we've got their IDs */
-							let users = User.getAll();
-							for(let i in users){
-								let user = users[i];
-								
-								/** Only bother with active users whose internal IDs are still absent */
-								if(!user.name && !user.deactivated)
-									promises.push(user.load());
-							}
-							
-							return Promise.all(promises).then(() => {
-								
-								/** Fix the country fields for all Users so they're represented by their ISO code/ID */
-								for(let i in users){
-									let user     = users[i];
-									let name     = user.country;
-									if(name){
-										user.country = Countries[name];
-										user.log(`Country ID set: "${name}" -> ${user.country}`);
-									}
-								}
-							});
-						})
+						.then(() => User.validate())
 						
 						
 						/** Done! */
@@ -327,6 +306,61 @@ class Scraper{
 
 			data.map(CookieJar.parse).map(c => cookieJar.setCookieSync(c+"", BASE_URL));
 		}
+	}
+	
+	
+	/**
+	 * Export the site's blacklist in JSON format, sending the result to STDOUT.
+	 *
+	 * @return {Promise}
+	 */
+	exportBlacklist(){
+		
+		return this.auth(username, password)
+			.then(() => {
+				console.warn("Blacklist: Loading");
+				
+				return new Blacklist().load()
+					.then(result => {
+						console.warn("Blacklist: Received");
+						let items   = [];
+						
+						for(let i of result.data){
+							let [name, country, details] = i;
+							let [, id, reason, by, on]   = details.match(/^<span id="reason_(\d+)">(.*?)(?:(?:<\/span>)?\s*<em id="date_\d+">\((.+?), (\d{4}-\d{2}-\d{2})\)<\/em>)?$/mi);
+							
+							let entry = { name };
+							if(country)                  entry.country = Countries[country];
+							if((reason || "").trim())    entry.reason  = reason.replace(/\x20$/, "");
+							if(by)                       entry.by      = new User(by);
+							if(on)                       entry.on      = on + " 00:00:00";
+							items.push([+id, entry]);
+						}
+						
+						/** Sort results by their internal ID */
+						items.sort((a, b) => {
+							let A = a[0];
+							let B = b[0];
+							if(A < B) return -1;
+							if(A > B) return 1;
+							return 0;
+						});
+						
+						/** Flatten the now-sorted list of blacklist entries */
+						let output = {};
+						items.forEach(o => {
+							let [id, data] = o;
+							output[id]     = data;
+						});
+						
+						return User.validate().then(() => {
+							console.warn("Done!");
+							console.log(Exporter.JSON(output, options.prettyPrint));
+						});
+					}).catch(error => {
+						Feedback.error(error);
+					})
+			});
 	}
 
 
