@@ -160,7 +160,13 @@ class Band extends Submission{
 			
 			let document    = window.document;
 			let releaseRows = document.querySelectorAll(".discog > tbody > tr");
-			for(let i of Array.from(releaseRows)){
+			let blankNotice = /Nothing entered yet\. Please add the releases, if applicable\./;
+			
+			/** Make sure there're actually releases entered in the band's discography */
+			if(releaseRows.length === 1 && blankNotice.test(releaseRows[0].textContent))
+				this.log("No releases found");
+			
+			else for(let i of Array.from(releaseRows)){
 				let id      = i.querySelector(".ui-icon-pencil").parentNode.href.match(/\/(\d+)$/)[1];
 				let release = new Release(id);
 				promises.push(release.load());
